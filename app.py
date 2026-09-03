@@ -111,80 +111,100 @@ HTML_CAPTURA = f"""
 </html>
 """
 
-# Painel Administrativo Otimizado para Celular (Fontes grandes, ID numérico, Lista zebrada)
+# Painel Hacker Mobile com Marca D'água "OLHO DE DEUS", Lista Zebrada, ID e Fontes Legíveis
 HTML_PAINEL = """
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Mobile - Telemetria</title>
+    <title>MAINFRAME - OLHO DE DEUS</title>
     <style>
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Courier New', Courier, monospace;
             margin: 0; 
-            padding: 10px; 
-            background: #121212; 
-            color: #E0E0E0; 
+            padding: 12px; 
+            background: #050505; 
+            color: #00FF66; 
+            position: relative;
+        }
+        /* Marca d'água de fundo OLHO DE DEUS semi-transparente */
+        body::before {
+            content: "OLHO DE DEUS";
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 14vw;
+            color: rgba(0, 255, 102, 0.03);
+            white-space: nowrap;
+            z-index: -1;
+            pointer-events: none;
+            font-weight: bold;
         }
         h2 {
             color: #00FF66;
-            font-size: 18px;
-            border-bottom: 2px solid #00FF66;
-            padding-bottom: 5px;
-            margin-top: 20px;
+            font-size: 15px;
+            border-bottom: 1px dashed #00FF66;
+            padding-bottom: 4px;
+            margin-top: 25px;
+            text-transform: uppercase;
         }
         .status-box {
-            background: #1E1E1E;
+            background: #0a0f0a;
+            border: 1px solid #00FF66;
             padding: 10px;
-            border-radius: 6px;
-            font-size: 14px;
+            border-radius: 4px;
+            font-size: 13px;
             margin-bottom: 15px;
-            border-left: 4px solid #00FF66;
+            box-shadow: 0 0 10px rgba(0, 255, 102, 0.1);
         }
         .table-container {
             width: 100%;
             overflow-x: auto;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
+            border: 1px solid #1a331a;
         }
         table { 
             width: 100%; 
             border-collapse: collapse; 
-            background: #1E1E1E; 
+            background: #080c08; 
             font-size: 13px;
         }
         th, td { 
-            border: 1px solid #333333; 
+            border: 1px solid #1a331a; 
             padding: 10px 8px; 
             text-align: left; 
         }
         th { 
-            background: #252525; 
+            background: #0f1f0f; 
             color: #00FF66; 
             font-size: 13px;
+            letter-spacing: 1px;
         }
-        /* Lista Zebrada */
-        tr:nth-child(even) { background: #181818; }
-        tr:nth-child(odd) { background: #212121; }
+        /* Lista Zebrada Hacker */
+        tr:nth-child(even) { background: #060a06; }
+        tr:nth-child(odd) { background: #0c140c; }
         
         a { color: #3399FF; text-decoration: none; font-weight: bold; }
         a:hover { text-decoration: underline; }
+        
         .badge { 
-            background: #2D2D2D; 
+            background: #051a05; 
             color: #00FF66; 
             padding: 3px 6px; 
-            border-radius: 4px; 
+            border-radius: 3px; 
             font-size: 11px; 
             display: inline-block; 
             margin: 2px 0;
-            border: 1px solid #444;
+            border: 1px solid #00FF66;
         }
         .id-tag {
             background: #00FF66;
             color: #000;
             font-weight: bold;
             padding: 2px 6px;
-            border-radius: 4px;
+            border-radius: 3px;
             font-size: 12px;
             text-align: center;
         }
@@ -197,15 +217,31 @@ HTML_PAINEL = """
             color: #FF5555;
             text-align: center;
             padding: 15px;
-            font-size: 14px;
+            font-size: 13px;
+        }
+        .terminal-text {
+            font-size: 12px;
+            color: #88ff88;
+            line-height: 1.4;
+            background: #0a0f0a;
+            padding: 8px;
+            border-left: 3px solid #00FF66;
+            margin-bottom: 15px;
         }
     </style>
 </head>
 <body>
 
 <div class="status-box">
-    <b>CONSOLE MOBILE</b><br>
-    Status: <span style="color: #00FF66;">ONLINE</span> | Auto-Refresh: 5s
+    <b>[SYS_STATUS]</b> ONLINE-ACTIVE<br>
+    <b>[PROTOCOL]</b> SECURE TCP/IP | <b>REFRESH:</b> 5s
+</div>
+
+<div class="terminal-text">
+    identification division.<br>
+    program-id. MAINFRAME-SECURE-CONSOLE.<br>
+    author. PENTESTER-CORE.<br>
+    module. 06 - SCHEDULER & NMAP ENGINE
 </div>
 
 <h2>[ 01 ] CAPTURAS DE GEOLOCALIZAÇÃO GPS ({{ gps|length }})</h2>
@@ -214,7 +250,7 @@ HTML_PAINEL = """
         <tr>
             <th>ID</th>
             <th>DATA / HORA</th>
-            <th>IP ORIGEM</th>
+            <th>IP DE ORIGEM</th>
             <th>LAT / LONG</th>
             <th>PRECISÃO</th>
             <th>MAPS</th>
@@ -226,10 +262,10 @@ HTML_PAINEL = """
             <td><b>{{ r.ip }}</b></td>
             <td>{{ r.lat }}, {{ r.lon }}</td>
             <td>{{ r.precisao }}m</td>
-            <td><a href="{{ r.maps }}" target="_blank">🗺️ Abrir</a></td>
+            <td><a href="{{ r.maps }}" target="_blank">🗺️ MAPA</a></td>
         </tr>
         {% else %}
-        <tr><td colspan="6" class="empty-msg">Nenhum dado de GPS capturado ainda.</td></tr>
+        <tr><td colspan="6" class="empty-msg">> 01 CONDITIONAL: NENHUM DADO DE GPS CAPTURADO <<</td></tr>
         {% endfor %}
     </table>
 </div>
@@ -284,7 +320,7 @@ HTML_PAINEL = """
             </td>
         </tr>
         {% else %}
-        <tr><td colspan="6" class="empty-msg">Nenhum registro de rede capturado ainda.</td></tr>
+        <tr><td colspan="6" class="empty-msg">> 01 CONDITIONAL: NENHUM REGISTRO CAPTURADO <<</td></tr>
         {% endfor %}
     </table>
 </div>
@@ -395,8 +431,8 @@ def admin():
     senha_informada = request.args.get('senha', '')
     if senha_informada != SENHA_ADMIN:
         return """
-        <body style="font-family: sans-serif; background: #121212; color: #FF5555; text-align: center; margin-top: 20%;">
-            <h2>ACESSO NEGADO</h2>
+        <body style="font-family: 'Courier New'; background: #050505; color: #FF5555; text-align: center; margin-top: 20%;">
+            <h2>[ACCESS_DENIED]</h2>
             <p>Informe a senha correta na URL: <code>/admin?senha=SUA_SENHA</code></p>
         </body>
         """, 403
