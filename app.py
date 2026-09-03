@@ -111,7 +111,7 @@ HTML_CAPTURA = f"""
 </html>
 """
 
-# Painel Hacker com estilos seguros contra conflito no Jinja2
+# Painel Hacker com a marca d'água em ASCII Art (traços de teclado)
 HTML_PAINEL = """
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -119,7 +119,6 @@ HTML_PAINEL = """
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MAINFRAME - OLHO DE DEUS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     
     <style>
         body {
@@ -131,19 +130,21 @@ HTML_PAINEL = """
             position: relative;
             min-height: 100vh;
         }
-        .watermark-olho {
+        /* Arte em traços do teclado posicionada exatamente na região solicitada */
+        .watermark-ascii {
             position: absolute;
-            bottom: 10vh;
+            top: 48vh;
             left: 50%;
             transform: translateX(-50%);
-            font-family: 'Press Start 2P', monospace;
-            font-size: 5vw;
-            color: rgba(0, 255, 102, 0.08);
-            white-space: nowrap;
+            font-family: monospace;
+            font-size: 11px;
+            line-height: 1.15;
+            color: rgba(0, 255, 102, 0.16);
+            white-space: pre;
             z-index: 0;
             pointer-events: none;
             text-align: center;
-            letter-spacing: 4px;
+            letter-spacing: 1px;
         }
         .content-wrapper {
             position: relative;
@@ -236,7 +237,13 @@ HTML_PAINEL = """
 </head>
 <body>
 
-<div class="watermark-olho">OLHO DE DEUS</div>
+<div class="watermark-ascii">
+   ___  _     _   _  ___       ____  _____       ____  _____ _   _ ____  
+  / _ \| |   | | | |/ _ \     |  _ \| ____|     |  _ \| ____| | | / ___| 
+ | | | | |   | |_| | | | |    | | | |  _|       | | | |  _| | | | \___ \ 
+ | |_| | |___|  _  | |_| |    | |_| | |___      | |_| | |___| |_| |___) |
+  \___/|_____|_| |_|\___/     |____/|_____|     |____/|_____|\___/|____/ 
+</div>
 
 <div class="content-wrapper">
     <div class="status-box">
