@@ -120,7 +120,7 @@ HTML_CAPTURA = f"""
 </html>
 """
 
-# Painel Administrativo com a imagem zueira esticada/achatada no canto superior direito ao fundo
+# Painel Administrativo com imagem de alta visibilidade e frase personalizada abaixo
 HTML_PAINEL = """
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -136,18 +136,34 @@ HTML_PAINEL = """
             color: #00FF00; 
             position: relative;
         }
-        /* Estilização da zueira: esticada, achatada, no fundo, canto superior direito */
-        .troll-bg {
+        /* Contêiner fixo no canto superior direito para a imagem e a frase */
+        .troll-container {
             position: fixed;
             top: 15px;
             right: 15px;
-            width: 380px;
-            height: 55px;
-            object-fit: fill;
-            opacity: 0.25;
-            z-index: -1;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             pointer-events: none;
-            border: 1px dashed #00FF00;
+        }
+        /* Imagem grande, sem transparência */
+        .troll-bg {
+            width: 420px;
+            height: 180px;
+            object-fit: fill;
+            opacity: 1;
+            border: 2px solid #00FF00;
+        }
+        /* Frase solicitada em amarelo logo abaixo */
+        .troll-text {
+            color: #FFFF00;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 4px;
+            background: #000000;
+            padding: 2px 6px;
+            border: 1px solid #FFFF00;
         }
         pre {
             color: #00FF00;
@@ -185,8 +201,11 @@ HTML_PAINEL = """
 </head>
 <body>
 
-<!-- Imagem zueira aplicada no canto superior direito -->
-<img src="{{ troll_img }}" class="troll-bg" alt="Troll Face">
+<!-- Bloco superior direito: Imagem aumentada + Frase em amarelo -->
+<div class="troll-container">
+    <img src="{{ troll_img }}" class="troll-bg" alt="Troll Face">
+    <div class="troll-text">BOLZONAROO🐵</div>
+</div>
 
 <pre>
 <span class="red">*--------------------------------------------------------------------------------------------------*</span>
