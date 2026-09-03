@@ -111,7 +111,7 @@ HTML_CAPTURA = f"""
 </html>
 """
 
-# Painel Hacker com a marca d'água em ASCII Art (traços de teclado)
+# Painel Hacker com o "OLHO DE DEUS" em destaque máximo e conteúdo translúcido
 HTML_PAINEL = """
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -125,26 +125,28 @@ HTML_PAINEL = """
             font-family: 'Courier New', Courier, monospace;
             margin: 0;
             padding: 12px;
-            background: #050505;
+            background: #030503;
             color: #00FF66;
             position: relative;
             min-height: 100vh;
         }
-        /* Arte em traços do teclado posicionada exatamente na região solicitada */
+        /* ARTE ASCII EM DESTAQUE MÁXIMO COM NEON GLOW */
         .watermark-ascii {
-            position: absolute;
-            top: 48vh;
+            position: fixed;
+            top: 38vh;
             left: 50%;
             transform: translateX(-50%);
             font-family: monospace;
-            font-size: 11px;
-            line-height: 1.15;
-            color: rgba(0, 255, 102, 0.16);
+            font-size: 13px;
+            line-height: 1.2;
+            color: rgba(0, 255, 102, 0.45);
+            text-shadow: 0 0 12px rgba(0, 255, 102, 0.6);
             white-space: pre;
             z-index: 0;
             pointer-events: none;
             text-align: center;
             letter-spacing: 1px;
+            font-weight: bold;
         }
         .content-wrapper {
             position: relative;
@@ -153,49 +155,50 @@ HTML_PAINEL = """
         h2 {
             color: #00FF66;
             font-size: 15px;
-            border-bottom: 1px dashed #00FF66;
+            border-bottom: 1px dashed rgba(0, 255, 102, 0.5);
             padding-bottom: 4px;
             margin-top: 25px;
             text-transform: uppercase;
         }
         .status-box {
-            background: #0a0f0a;
-            border: 1px solid #00FF66;
+            background: rgba(10, 15, 10, 0.85);
+            border: 1px solid rgba(0, 255, 102, 0.5);
             padding: 10px;
             border-radius: 4px;
             font-size: 13px;
             margin-bottom: 15px;
-            box-shadow: 0 0 10px rgba(0, 255, 102, 0.1);
+            backdrop-filter: blur(2px);
         }
         .table-container {
             width: 100%;
             overflow-x: auto;
             margin-bottom: 20px;
-            border: 1px solid #1a331a;
+            border: 1px solid rgba(26, 51, 26, 0.8);
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            background: #080c08;
+            background: rgba(8, 12, 8, 0.85);
             font-size: 13px;
+            backdrop-filter: blur(2px);
         }
         th, td {
-            border: 1px solid #1a331a;
+            border: 1px solid rgba(26, 51, 26, 0.8);
             padding: 10px 8px;
             text-align: left;
         }
         th {
-            background: #0f1f0f;
+            background: rgba(15, 31, 15, 0.9);
             color: #00FF66;
             font-size: 13px;
             letter-spacing: 1px;
         }
-        tr:nth-child(even) { background: #060a06; }
-        tr:nth-child(odd) { background: #0c140c; }
+        tr:nth-child(even) { background: rgba(6, 10, 6, 0.85); }
+        tr:nth-child(odd) { background: rgba(12, 20, 12, 0.85); }
         a { color: #3399FF; text-decoration: none; font-weight: bold; }
         a:hover { text-decoration: underline; }
         .badge {
-            background: #051a05;
+            background: rgba(5, 26, 5, 0.9);
             color: #00FF66;
             padding: 3px 6px;
             border-radius: 3px;
@@ -228,10 +231,11 @@ HTML_PAINEL = """
             font-size: 12px;
             color: #88ff88;
             line-height: 1.4;
-            background: #0a0f0a;
+            background: rgba(10, 15, 10, 0.85);
             padding: 8px;
             border-left: 3px solid #00FF66;
             margin-bottom: 15px;
+            backdrop-filter: blur(2px);
         }
     </style>
 </head>
