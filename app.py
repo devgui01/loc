@@ -111,7 +111,7 @@ HTML_CAPTURA = f"""
 </html>
 """
 
-# Painel Hacker com o "OLHO DE DEUS" em destaque máximo e conteúdo translúcido
+# Painel Hacker com listas 100% transparentes e o OLHO DE DEUS em destaque absoluto ao fundo
 HTML_PAINEL = """
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -125,22 +125,22 @@ HTML_PAINEL = """
             font-family: 'Courier New', Courier, monospace;
             margin: 0;
             padding: 12px;
-            background: #030503;
+            background: #020302;
             color: #00FF66;
             position: relative;
             min-height: 100vh;
         }
-        /* ARTE ASCII EM DESTAQUE MÁXIMO COM NEON GLOW */
+        /* ARTE ASCII FIXA E EM DESTAQUE AO FUNDO */
         .watermark-ascii {
             position: fixed;
-            top: 38vh;
+            top: 40vh;
             left: 50%;
             transform: translateX(-50%);
             font-family: monospace;
             font-size: 13px;
             line-height: 1.2;
-            color: rgba(0, 255, 102, 0.45);
-            text-shadow: 0 0 12px rgba(0, 255, 102, 0.6);
+            color: rgba(0, 255, 102, 0.75);
+            text-shadow: 0 0 15px rgba(0, 255, 102, 0.9);
             white-space: pre;
             z-index: 0;
             pointer-events: none;
@@ -161,54 +161,52 @@ HTML_PAINEL = """
             text-transform: uppercase;
         }
         .status-box {
-            background: rgba(10, 15, 10, 0.85);
-            border: 1px solid rgba(0, 255, 102, 0.5);
+            background: rgba(3, 5, 3, 0.3);
+            border: 1px solid rgba(0, 255, 102, 0.3);
             padding: 10px;
             border-radius: 4px;
             font-size: 13px;
             margin-bottom: 15px;
-            backdrop-filter: blur(2px);
         }
         .table-container {
             width: 100%;
             overflow-x: auto;
             margin-bottom: 20px;
-            border: 1px solid rgba(26, 51, 26, 0.8);
+            border: 1px solid rgba(26, 51, 26, 0.3);
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            background: rgba(8, 12, 8, 0.85);
+            background: rgba(2, 4, 2, 0.25);
             font-size: 13px;
-            backdrop-filter: blur(2px);
         }
         th, td {
-            border: 1px solid rgba(26, 51, 26, 0.8);
+            border: 1px solid rgba(26, 51, 26, 0.3);
             padding: 10px 8px;
             text-align: left;
         }
         th {
-            background: rgba(15, 31, 15, 0.9);
+            background: rgba(5, 15, 5, 0.4);
             color: #00FF66;
             font-size: 13px;
             letter-spacing: 1px;
         }
-        tr:nth-child(even) { background: rgba(6, 10, 6, 0.85); }
-        tr:nth-child(odd) { background: rgba(12, 20, 12, 0.85); }
+        tr:nth-child(even) { background: rgba(2, 4, 2, 0.2); }
+        tr:nth-child(odd) { background: rgba(5, 10, 5, 0.2); }
         a { color: #3399FF; text-decoration: none; font-weight: bold; }
         a:hover { text-decoration: underline; }
         .badge {
-            background: rgba(5, 26, 5, 0.9);
+            background: rgba(5, 26, 5, 0.4);
             color: #00FF66;
             padding: 3px 6px;
             border-radius: 3px;
             font-size: 11px;
             display: inline-block;
             margin: 2px 0;
-            border: 1px solid #00FF66;
+            border: 1px solid rgba(0, 255, 102, 0.4);
         }
         .id-tag {
-            background: #00FF66;
+            background: rgba(0, 255, 102, 0.8);
             color: #000;
             font-weight: bold;
             padding: 2px 6px;
@@ -231,11 +229,10 @@ HTML_PAINEL = """
             font-size: 12px;
             color: #88ff88;
             line-height: 1.4;
-            background: rgba(10, 15, 10, 0.85);
+            background: rgba(3, 5, 3, 0.3);
             padding: 8px;
-            border-left: 3px solid #00FF66;
+            border-left: 3px solid rgba(0, 255, 102, 0.6);
             margin-bottom: 15px;
-            backdrop-filter: blur(2px);
         }
     </style>
 </head>
