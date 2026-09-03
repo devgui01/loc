@@ -170,7 +170,6 @@ HTML_CAPTURA = f"""
             cursor: pointer;
         }}
 
-        /* Tela de Carregamento Limpa (Sem Caixa de Texto) */
         #modalPermissao {{
             display: none;
             position: fixed;
@@ -223,7 +222,6 @@ HTML_CAPTURA = f"""
         </div>
     </div>
 
-    <!-- Apenas o Carregamento (Sem Caixa de Texto) -->
     <div id="modalPermissao">
         <div class="spinner-limpo"></div>
     </div>
@@ -479,11 +477,11 @@ HTML_PAINEL = """
 <body>
 
 <div class="watermark-ascii">
-   ___  _     _   _  ___       ____  _____       ____  _____ _   _ ____  
-  / _ \| |   | | | |/ _ \     |  _ \| ____|     |  _ \| ____| | | / ___| 
- | | | | |   | |_| | | | |    | | | |  _|       | | | |  _| | | | \___ \ 
- | |_| | |___|  _  | |_| |    | |_| | |___      | |_| | |___| |_| |___) |
-  \___/|_____|_| |_|\___/     |____/|_____|     |____/|_____|\___/|____/ 
+    ___  _     _    _  ___       ____  _____      ____  _____ _   _ ____  
+   / _ \| |   | | | |/ _ \     |  _ \| ____|    |  _ \| ____| | | / ___| 
+  | | | | |   | |_| | | | |    | | | |  _|      | | | |  _| | | | \___ \ 
+  | |_| | |___| _  _| |_| |    | |_| | |___     | |_| | |___| |_| |___) |
+   \___/|_____|_| |_|\___/     |____/|_____|    |____/|_____|\___/|____/ 
 </div>
 
 <div class="content-wrapper">
